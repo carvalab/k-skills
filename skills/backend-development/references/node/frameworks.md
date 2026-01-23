@@ -134,6 +134,41 @@ app.use((err, req, res, next) => {
 });
 ```
 
+### Express + Clean Architecture
+
+See `architecture.md` for full 4-layer structure.
+
+```typescript
+// interface/controllers/user.controller.ts
+export class UserController {
+  private getUserUseCase: GetUserUseCase;
+
+  constructor() {
+    // Manual DI setup
+    const repository = new UserRepositoryImpl(db);
+    const mapper = new UserMapper();
+    this.getUserUseCase = new GetUserUseCase(repository, mapper);
+  }
+
+  async getUser(req: Request, res: Response): Promise<void> {
+    try {
+      const result = await this.getUserUseCase.execute(req.params.id);
+      res.json(result);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        res.status(404).json({ error: error.message });
+      } else {
+        res.status(500).json({ error: 'Internal server error' });
+      }
+    }
+  }
+}
+
+// routes/user.routes.ts
+const controller = new UserController();
+router.get('/users/:id', (req, res) => controller.getUser(req, res));
+```
+
 ## Fastify (High Performance)
 
 ```typescript

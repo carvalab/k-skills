@@ -1,6 +1,26 @@
 # Backend Code Quality
 
-SOLID principles, design patterns, and clean code (2026).
+SOLID, DRY, YAGNI, KISS principles and clean code patterns.
+
+## Existing Projects Rule
+
+**Before applying patterns, understand existing codebase:**
+
+1. Read the code structure first
+2. Follow existing patterns (consistency > "better" patterns)
+3. Apply improvements to NEW code you write
+4. Don't refactor unless explicitly asked
+
+```typescript
+// Project uses callbacks? → Use callbacks
+// Project has flat structure? → Keep flat
+// Project has no interfaces? → Don't add them everywhere
+```
+
+**Apply Clean Architecture/patterns to:**
+- New greenfield projects
+- New modules (when it fits existing style)
+- When explicitly asked to refactor
 
 ## SOLID Principles
 
@@ -120,15 +140,11 @@ class PostgresUserRepository implements UserRepository {
 ### Factory Pattern
 
 ```typescript
-interface Notification { send(message: string): Promise<void>; }
-
+interface Notification { send(msg: string): Promise<void>; }
 class NotificationFactory {
   static create(type: 'email' | 'sms' | 'push'): Notification {
-    switch (type) {
-      case 'email': return new EmailNotification();
-      case 'sms': return new SMSNotification();
-      case 'push': return new PushNotification();
-    }
+    const map = { email: EmailNotification, sms: SMSNotification, push: PushNotification };
+    return new map[type]();
   }
 }
 ```
@@ -137,18 +153,10 @@ class NotificationFactory {
 
 ```typescript
 interface Observer { update(event: any): void; }
-
 class EventEmitter {
   private observers: Map<string, Observer[]> = new Map();
-
-  subscribe(event: string, observer: Observer) {
-    if (!this.observers.has(event)) this.observers.set(event, []);
-    this.observers.get(event)!.push(observer);
-  }
-
-  emit(event: string, data: any) {
-    this.observers.get(event)?.forEach(o => o.update(data));
-  }
+  subscribe(event: string, obs: Observer) { /* add to map */ }
+  emit(event: string, data: any) { this.observers.get(event)?.forEach(o => o.update(data)); }
 }
 ```
 
@@ -157,27 +165,16 @@ class EventEmitter {
 ### Meaningful Names
 
 ```typescript
-// BAD
-function d(a: number, b: number) { return a * b * 0.0254; }
-
-// GOOD
-function calculateAreaInMeters(widthInInches: number, heightInInches: number) {
-  const INCHES_TO_METERS = 0.0254;
-  return widthInInches * heightInInches * INCHES_TO_METERS;
-}
+// BAD: d(a, b)  →  GOOD: calculateAreaInMeters(width, height)
 ```
 
 ### Small Functions
 
 ```typescript
-// BAD: 200-line function doing everything
-
-// GOOD: Composed small functions
+// BAD: 200-line function  →  GOOD: Composed small functions
 async function processOrder(orderId: string) {
   const order = await validateOrder(orderId);
-  await checkInventory(order);
-  const payment = await processPayment(order);
-  await updateOrderStatus(orderId, 'paid');
+  await processPayment(order);
   await sendConfirmationEmail(order);
 }
 ```
@@ -185,57 +182,52 @@ async function processOrder(orderId: string) {
 ### Avoid Magic Numbers
 
 ```typescript
-// BAD
-if (user.age < 18) { throw new Error('Too young'); }
-setTimeout(fetchData, 86400000);
-
-// GOOD
+// BAD: if (age < 18) / setTimeout(fn, 86400000)
+// GOOD:
 const MINIMUM_AGE = 18;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-
-if (user.age < MINIMUM_AGE) { throw new Error('Too young'); }
-setTimeout(fetchData, ONE_DAY_MS);
 ```
 
 ### Error Handling
 
 ```typescript
-// BAD
-try {
-  const user = await db.findUser(id);
-  return user;
-} catch (e) {
-  console.log(e);
-  return null;
-}
-
-// GOOD
+// BAD: catch (e) { console.log(e); return null; }
+// GOOD:
 try {
   const user = await db.findUser(id);
   if (!user) throw new UserNotFoundError(id);
   return user;
 } catch (error) {
-  logger.error('Failed to fetch user', { userId: id, error: error.message });
+  logger.error('Failed to fetch user', { userId: id, error });
   throw new DatabaseError('User fetch failed', { cause: error });
 }
 ```
 
+### Comments (Only When Necessary)
+
+**Code should be self-documenting.** Comments explain "why", not "what".
+
+```typescript
+// ❌ BAD: Obvious / commented-out code
+const total = price * quantity; // Calculate total
+// const oldLogic = calculateOldWay(x);
+
+// ✅ GOOD: Explains WHY (non-obvious reason)
+// Retry with backoff - third-party API has rate limits
+await retryWithBackoff(() => externalApi.call());
+
+// ✅ GOOD: Public API doc
+/** Creates user and sends welcome email. Throws if email exists. */
+async function createUser(email: string): Promise<User> { }
+```
+
+**Comment:** Complex logic, workarounds, public APIs. **Don't comment:** Obvious code, every function.
+
 ### DRY (Don't Repeat Yourself)
 
 ```typescript
-// BAD: Duplicated validation
-app.post('/api/users', (req, res) => {
-  if (!req.body.email || !req.body.email.includes('@')) {
-    return res.status(400).json({ error: 'Invalid email' });
-  }
-});
-app.put('/api/users/:id', (req, res) => {
-  if (!req.body.email || !req.body.email.includes('@')) {
-    return res.status(400).json({ error: 'Invalid email' });
-  }
-});
-
-// GOOD: Reusable validation
+// BAD: Duplicated validation in multiple places
+// GOOD: Extract to reusable function
 function validateEmail(email: string) {
   if (!email || !email.includes('@')) {
     throw new ValidationError('Invalid email');
@@ -243,51 +235,66 @@ function validateEmail(email: string) {
 }
 ```
 
+### YAGNI (You Aren't Gonna Need It)
+
+```typescript
+// BAD: Building features "just in case"
+class UserService {
+  createUser() {}
+  createUserWithRole() {}      // Not needed yet
+  createUserBatch() {}         // Not needed yet
+  createUserFromCSV() {}       // Not needed yet
+  createUserWithInvitation() {} // Not needed yet
+}
+
+// GOOD: Only what's needed NOW
+class UserService {
+  createUser() {}  // Add others when actually needed
+}
+```
+
+**Rule:** Don't build it until you need it. Unused code is maintenance burden.
+
+### KISS (Keep It Simple, Stupid)
+
+```typescript
+// BAD: Over-engineered for simple task
+class UserNameFormatter {
+  private strategy: FormattingStrategy;
+  private cache: Map<string, string>;
+  constructor(strategyFactory: StrategyFactory) {
+    this.strategy = strategyFactory.create('name');
+    this.cache = new Map();
+  }
+  format(user: User): string { /* 50 lines */ }
+}
+
+// GOOD: Simple solution
+function formatUserName(user: User): string {
+  return `${user.firstName} ${user.lastName}`.trim();
+}
+```
+
+**Rule:** Choose the simplest solution that works. Complexity has cost.
+
 ## Refactoring Techniques
 
-### Extract Method
-
-```typescript
-// Before
-function renderOrder(order: Order) {
-  console.log('Order Details:');
-  console.log(`ID: ${order.id}`);
-  console.log('Items:');
-  order.items.forEach(item => console.log(`- ${item.name}`));
-}
-
-// After
-function renderOrder(order: Order) {
-  printOrderHeader(order);
-  printOrderItems(order.items);
-}
-```
-
-### Replace Conditional with Polymorphism
-
-```typescript
-// Before
-function getShippingCost(method: string) {
-  if (method === 'standard') return 5;
-  if (method === 'express') return 15;
-  if (method === 'overnight') return 30;
-}
-
-// After
-interface ShippingMethod { getCost(): number; }
-class StandardShipping implements ShippingMethod { getCost() { return 5; } }
-class ExpressShipping implements ShippingMethod { getCost() { return 15; } }
-```
+- **Extract Method** - Break large functions into smaller named functions
+- **Replace Conditional with Polymorphism** - Use interfaces instead of if/switch
+- **Introduce Parameter Object** - Group related params into object
+- **Replace Magic Number** - Use named constants
 
 ## Code Quality Checklist
 
-- [ ] SOLID principles applied
+- [ ] **Existing patterns respected** (if existing project)
+- [ ] SOLID principles applied (where appropriate)
+- [ ] DRY - No duplication
+- [ ] YAGNI - No unused features built
+- [ ] KISS - Simplest solution chosen
 - [ ] Functions < 20 lines
-- [ ] Meaningful names
+- [ ] Meaningful names (self-documenting)
 - [ ] No magic numbers
 - [ ] Proper error handling
-- [ ] No duplication (DRY)
-- [ ] Comments explain "why"
-- [ ] Design patterns appropriate
-- [ ] Dependency injection
+- [ ] **Comments only for "why"** (not obvious "what")
+- [ ] No commented-out code
 - [ ] Readable > clever

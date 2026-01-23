@@ -295,25 +295,6 @@ SDKs never crash the application:
 
 ## Best Practices
 
-**DO:**
-- Use structured logging with consistent field names
-- Include request_id, trace_id for traceability
-- Use state-machine pattern (start/success/failed)
-- Keep metric tags low-cardinality
-- Mask PII before logging
+**DO:** Structured logging, include request_id/trace_id, state-machine pattern (start/success/failed), low-cardinality metric tags, mask PII.
 
-**DON'T:**
-- Log in tight loops (use sampling)
-- Use DEBUG level in production
-- Include user IDs in metric tags
-- Log passwords, tokens, or API keys
-- Create unbounded metric cardinality
-
-## SDK Implementation Status
-
-| Component | Go | TypeScript |
-|-----------|-----|-----------|
-| Logging | Complete | Complete |
-| Metrics | Complete | Complete |
-| Singleton | Complete | Complete |
-| PII Masking | Partial | Partial |
+**DON'T:** Log in tight loops, DEBUG in production, user IDs in metric tags, log secrets, unbounded cardinality.

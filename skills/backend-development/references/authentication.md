@@ -238,29 +238,11 @@ const valid = await argon2.verify(hash, 'password123');
 ### Go Argon2id
 
 ```go
-import "golang.org/x/crypto/argon2"
-
-func HashPassword(password string) (string, error) {
-    salt := make([]byte, 16)
-    rand.Read(salt)
-
-    hash := argon2.IDKey([]byte(password), salt, 3, 64*1024, 4, 32)
-
-    // Encode salt + hash
-    return base64.StdEncoding.EncodeToString(append(salt, hash...)), nil
-}
-
-func VerifyPassword(password, encoded string) bool {
-    decoded, _ := base64.StdEncoding.DecodeString(encoded)
-    salt := decoded[:16]
-    hash := decoded[16:]
-
-    computed := argon2.IDKey([]byte(password), salt, 3, 64*1024, 4, 32)
-    return subtle.ConstantTimeCompare(hash, computed) == 1
-}
+// Go: golang.org/x/crypto/argon2
+hash := argon2.IDKey([]byte(password), salt, 3, 64*1024, 4, 32)
 ```
 
-### Password Policy (NIST 2026)
+### Password Policy (NIST)
 
 - Minimum 12 characters
 - No composition rules (allow passphrases)
@@ -306,21 +288,9 @@ const keyRecord = await db.apiKeys.findOne({ hashedKey: providedHash });
 
 | Use Case | Approach |
 |----------|----------|
-| Web app | OAuth 2.1 + JWT |
-| Mobile app | OAuth 2.1 + PKCE |
-| SPA | OAuth 2.1 + PKCE |
+| Web/Mobile/SPA | OAuth 2.1 + PKCE + JWT |
 | Server-to-server | Client credentials |
 | Third-party API | API keys with scopes |
 | High-security | WebAuthn + MFA |
 
-## Security Checklist
-
-- [ ] OAuth 2.1 with PKCE
-- [ ] JWT expires in 15 minutes
-- [ ] Refresh token rotation
-- [ ] RBAC with deny-by-default
-- [ ] MFA for admin accounts
-- [ ] Argon2id for passwords
-- [ ] Secure cookies (HttpOnly, Secure, SameSite)
-- [ ] Rate limiting on auth endpoints
-- [ ] Audit logging for auth events
+**Security essentials:** OAuth 2.1 + PKCE, 15min JWT expiry, refresh token rotation, RBAC deny-by-default, Argon2id passwords, secure cookies (HttpOnly, Secure, SameSite), rate limiting, audit logging.

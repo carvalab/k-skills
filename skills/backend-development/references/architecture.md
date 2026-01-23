@@ -1,6 +1,127 @@
 # Backend Architecture Patterns
 
-Microservices, event-driven architecture, and scalability patterns (2026).
+Clean Architecture, microservices, event-driven patterns.
+
+## Clean Architecture (4-Layer)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Interface Layer                          │
+│            (Controllers, HTTP handlers, CLI)                │
+├─────────────────────────────────────────────────────────────┤
+│                   Application Layer                         │
+│              (Use Cases, DTOs, Mappers)                     │
+├─────────────────────────────────────────────────────────────┤
+│                 Infrastructure Layer                        │
+│        (Repository Impls, External APIs, DB)                │
+├─────────────────────────────────────────────────────────────┤
+│                     Domain Layer                            │
+│         (Entities, Repository Interfaces)                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Dependency Rule:** Inner layers never depend on outer layers.
+
+### Project Structure
+
+```
+src/
+├── domain/                    # Business logic (no dependencies)
+│   ├── entities/
+│   │   └── user.entity.ts
+│   └── repositories/
+│       └── user.repository.interface.ts
+├── application/               # Use cases orchestrate domain + infra
+│   ├── use-cases/
+│   │   └── get-user.use-case.ts
+│   ├── dtos/
+│   │   └── user.dto.ts
+│   └── mappers/
+│       └── user.mapper.ts
+├── infrastructure/            # External integrations
+│   ├── repositories/
+│   │   └── user.repository.impl.ts
+│   └── external-api/
+│       └── api-client.ts
+├── interface/                 # HTTP/Protocol layer
+│   ├── controllers/
+│   │   └── user.controller.ts
+│   └── server.ts
+└── platform/                  # Cross-cutting (config, logging)
+    ├── config/
+    └── utils/
+```
+
+### Key Patterns
+
+**Repository Pattern:**
+```typescript
+// domain/repositories/user.repository.interface.ts
+export interface UserRepository {
+  findById(id: string): Promise<User | null>;
+  save(user: User): Promise<User>;
+}
+
+// infrastructure/repositories/user.repository.impl.ts
+export class UserRepositoryImpl implements UserRepository {
+  constructor(private db: Database) {}
+
+  async findById(id: string): Promise<User | null> {
+    const row = await this.db.query('SELECT * FROM users WHERE id = $1', [id]);
+    return row ? this.toEntity(row) : null;
+  }
+}
+```
+
+**Use Case Pattern:**
+```typescript
+// application/use-cases/get-user.use-case.ts
+export class GetUserUseCase {
+  constructor(
+    private repository: UserRepository,
+    private mapper: UserMapper,
+  ) {}
+
+  async execute(id: string): Promise<UserResponseDTO> {
+    const user = await this.repository.findById(id);
+    if (!user) throw new NotFoundError('User');
+    return this.mapper.toResponseDTO(user);
+  }
+}
+```
+
+**Mapper Pattern:**
+```typescript
+// application/mappers/user.mapper.ts
+export class UserMapper {
+  toResponseDTO(entity: User): UserResponseDTO {
+    return {
+      id: entity.id,
+      email: entity.email,
+      createdAt: entity.createdAt.toISOString(),
+    };
+  }
+}
+```
+
+**Manual DI (Factory):**
+```typescript
+// interface/controllers/user.controller.ts
+export class UserController {
+  private getUserUseCase: GetUserUseCase;
+
+  constructor() {
+    this.setupDependencies();
+  }
+
+  private setupDependencies(): void {
+    const db = new Database(config.db);
+    const repository = new UserRepositoryImpl(db);
+    const mapper = new UserMapper();
+    this.getUserUseCase = new GetUserUseCase(repository, mapper);
+  }
+}
+```
 
 ## Microservices Architecture
 
@@ -96,44 +217,10 @@ const balance = events.reduce((acc, event) => {
 }, 0);
 ```
 
-### Kafka (Event Streaming)
+### Message Queues
 
-```typescript
-import { Kafka } from 'kafkajs';
-
-const kafka = new Kafka({ clientId: 'order-service', brokers: ['kafka:9092'] });
-
-// Producer
-await producer.send({
-  topic: 'order-events',
-  messages: [{ key: order.id, value: JSON.stringify(event) }],
-});
-
-// Consumer
-await consumer.subscribe({ topic: 'order-events' });
-await consumer.run({
-  eachMessage: async ({ message }) => {
-    const event = JSON.parse(message.value.toString());
-    await processEvent(event);
-  },
-});
-```
-
-### RabbitMQ (Task Queues)
-
-```typescript
-import amqp from 'amqplib';
-
-// Producer
-channel.sendToQueue('email-queue', Buffer.from(JSON.stringify(emailData)));
-
-// Consumer
-await channel.consume('email-queue', async (msg) => {
-  const data = JSON.parse(msg.content.toString());
-  await sendEmail(data);
-  channel.ack(msg);
-});
-```
+**Kavak:** Use kbroker for events between services, River Queue (Go) or pg-boss (Node) for jobs.
+See `references/kavak/kbroker.md` and `references/kavak/queues-ratelimit.md`.
 
 ## CQRS
 

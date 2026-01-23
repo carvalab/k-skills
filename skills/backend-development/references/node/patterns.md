@@ -2,12 +2,13 @@
 
 Validation, errors, async, testing, observability.
 
-## Validation
+## Validation (Multi-Layer)
 
-### class-validator + class-transformer
+### Layer 1: Request/DTO Validation
 
 ```typescript
-import { IsEmail, IsString, MinLength, IsOptional } from 'class-validator';
+// class-validator + class-transformer
+import { IsEmail, IsString, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 class CreateUserDto {
@@ -18,17 +19,61 @@ class CreateUserDto {
   @IsString()
   @MinLength(12)
   password: string;
-
-  @IsString()
-  @IsOptional()
-  name?: string;
 }
 
 // NestJS auto-validates
 app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
+// Express middleware
+export function validateRequest<T>(dtoClass: new () => T) {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    const dto = plainToInstance(dtoClass, req.body);
+    const errors = await validate(dto);
+    if (errors.length) return res.status(400).json({ errors });
+    req.body = dto;
+    next();
+  };
+}
 ```
 
-### Zod
+### Layer 2: Use Case Validation
+
+```typescript
+// application/use-cases/create-user.use-case.ts
+async execute(params: CreateUserDTO): Promise<UserResponseDTO> {
+  // Business rule validation
+  if (!params.email?.trim()) {
+    throw new ValidationError('Email is required');
+  }
+  const existing = await this.repository.findByEmail(params.email);
+  if (existing) {
+    throw new ConflictError('Email already exists');
+  }
+  // ... proceed with creation
+}
+```
+
+### Layer 3: Entity Validation
+
+```typescript
+// domain/entities/user.entity.ts
+export class User {
+  constructor(
+    private id: string,
+    private email: string,
+    private passwordHash: string,
+  ) {
+    this.validateEntity();
+  }
+
+  private validateEntity(): void {
+    if (!this.id?.trim()) throw new Error('User ID cannot be empty');
+    if (!this.email?.includes('@')) throw new Error('Invalid email format');
+  }
+}
+```
+
+### Zod (Alternative)
 
 ```typescript
 import { z } from 'zod';
@@ -36,15 +81,11 @@ import { z } from 'zod';
 const UserSchema = z.object({
   email: z.string().email(),
   password: z.string().min(12),
-  name: z.string().optional(),
 });
 
 type User = z.infer<typeof UserSchema>;
-
 const result = UserSchema.safeParse(input);
-if (!result.success) {
-  throw new ValidationError(result.error.issues);
-}
+if (!result.success) throw new ValidationError(result.error.issues);
 ```
 
 ## Error Handling
