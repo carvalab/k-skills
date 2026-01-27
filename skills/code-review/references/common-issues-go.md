@@ -5,6 +5,7 @@
 ### Ignoring Errors
 
 **Issue**: Not checking returned errors
+
 ```go
 // Bad
 file, _ := os.Open("config.json")
@@ -26,6 +27,7 @@ if err != nil {
 ### Naked Returns with Named Results
 
 **Issue**: Hard to follow, especially in long functions
+
 ```go
 // Bad
 func process(data []byte) (result string, err error) {
@@ -43,6 +45,7 @@ func process(data []byte) (string, error) {
 ### Not Wrapping Errors
 
 **Issue**: Loses context for debugging
+
 ```go
 // Bad
 if err != nil {
@@ -62,6 +65,7 @@ if err != nil {
 ### Forgetting defer for Cleanup
 
 **Issue**: Resource leaks
+
 ```go
 // Bad
 func readFile(path string) ([]byte, error) {
@@ -92,6 +96,7 @@ func readFile(path string) ([]byte, error) {
 ### defer in Loop
 
 **Issue**: Resources not released until function exits
+
 ```go
 // Bad - all files open until function returns
 for _, path := range paths {
@@ -117,6 +122,7 @@ for _, path := range paths {
 ### Data Race on Shared Variable
 
 **Issue**: Concurrent access without synchronization
+
 ```go
 // Bad
 var counter int
@@ -138,6 +144,7 @@ for i := 0; i < 10; i++ {
 ### Goroutine Leak
 
 **Issue**: Goroutine blocks forever
+
 ```go
 // Bad - no way to stop
 func startWorker() {
@@ -166,6 +173,7 @@ func startWorker(ctx context.Context) {
 ### Loop Variable Capture
 
 **Issue**: All goroutines see same value (fixed in Go 1.22+)
+
 ```go
 // Bad (Go < 1.22)
 for _, item := range items {
@@ -190,6 +198,7 @@ for _, item := range items {
 ### Nil Map Write
 
 **Issue**: Panic on write to nil map
+
 ```go
 // Bad
 var users map[string]User
@@ -203,6 +212,7 @@ users["alice"] = User{}
 ### Slice Append Side Effect
 
 **Issue**: Modifying underlying array
+
 ```go
 // Bad - may modify original
 func addItem(items []string, item string) []string {
@@ -224,6 +234,7 @@ func addItem(items []string, item string) []string {
 ### Empty Interface Overuse
 
 **Issue**: Loses type safety
+
 ```go
 // Bad
 func process(data interface{}) { ... }
@@ -237,6 +248,7 @@ func processUser(user User) { ... }
 ### Returning Concrete Type for Interface
 
 **Issue**: Prevents nil interface issues
+
 ```go
 // Bad - can return (*MyError)(nil) which != nil
 func validate() error {
@@ -262,6 +274,7 @@ func validate() error {
 ### Not Using Table-Driven Tests
 
 **Issue**: Repetitive test code
+
 ```go
 // Bad
 func TestAdd(t *testing.T) {
@@ -301,6 +314,7 @@ func TestAdd(t *testing.T) {
 ### String Concatenation in Loop
 
 **Issue**: Creates many allocations
+
 ```go
 // Bad
 var result string
@@ -319,6 +333,7 @@ result := builder.String()
 ### Unnecessary Allocations
 
 **Issue**: Allocating when not needed
+
 ```go
 // Bad
 func contains(items []string, target string) bool {

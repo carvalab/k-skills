@@ -39,27 +39,27 @@ npx jsdoc2md src/lib/*.ts > docs/lib-api.md
  * Usage: npx tsx scripts/codemaps/generate.ts
  */
 
-import { Project } from 'ts-morph'
+import { Project } from 'ts-morph';
 
 async function generateCodemaps() {
   const project = new Project({
     tsConfigFilePath: 'tsconfig.json',
-  })
+  });
 
-  const sourceFiles = project.getSourceFiles('src/**/*.{ts,tsx}')
+  const sourceFiles = project.getSourceFiles('src/**/*.{ts,tsx}');
 
   for (const file of sourceFiles) {
-    const exports = file.getExportedDeclarations()
-    const imports = file.getImportDeclarations()
+    const exports = file.getExportedDeclarations();
+    const imports = file.getImportDeclarations();
 
     // Build module info
-    console.log(`File: ${file.getFilePath()}`)
-    console.log(`Exports: ${exports.size}`)
-    console.log(`Imports: ${imports.length}`)
+    console.log(`File: ${file.getFilePath()}`);
+    console.log(`Exports: ${exports.size}`);
+    console.log(`Imports: ${imports.length}`);
   }
 }
 
-generateCodemaps()
+generateCodemaps();
 ```
 
 ## Documentation Update Script
@@ -70,29 +70,29 @@ generateCodemaps()
  * Usage: npx tsx scripts/docs/update.ts
  */
 
-import * as fs from 'fs'
-import * as path from 'path'
+import * as fs from 'fs';
+import * as path from 'path';
 
 async function updateDocs() {
   // 1. Read package.json for project info
-  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'))
+  const pkg = JSON.parse(fs.readFileSync('package.json', 'utf-8'));
 
   // 2. Scan src/ for structure
-  const structure = scanDirectory('src')
+  const structure = scanDirectory('src');
 
   // 3. Update README sections
-  await updateReadme(pkg, structure)
+  await updateReadme(pkg, structure);
 
   // 4. Regenerate codemaps
-  await regenerateCodemaps(structure)
+  await regenerateCodemaps(structure);
 }
 
 function scanDirectory(dir: string): string[] {
   // Recursively scan directory
-  return fs.readdirSync(dir, { recursive: true }) as string[]
+  return fs.readdirSync(dir, { recursive: true }) as string[];
 }
 
-updateDocs()
+updateDocs();
 ```
 
 ## npm Scripts

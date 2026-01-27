@@ -55,6 +55,7 @@ src/
 ### Key Patterns
 
 **Repository Pattern:**
+
 ```typescript
 // domain/repositories/user.repository.interface.ts
 export interface UserRepository {
@@ -74,12 +75,13 @@ export class UserRepositoryImpl implements UserRepository {
 ```
 
 **Use Case Pattern:**
+
 ```typescript
 // application/use-cases/get-user.use-case.ts
 export class GetUserUseCase {
   constructor(
     private repository: UserRepository,
-    private mapper: UserMapper,
+    private mapper: UserMapper
   ) {}
 
   async execute(id: string): Promise<UserResponseDTO> {
@@ -91,6 +93,7 @@ export class GetUserUseCase {
 ```
 
 **Mapper Pattern:**
+
 ```typescript
 // application/mappers/user.mapper.ts
 export class UserMapper {
@@ -105,6 +108,7 @@ export class UserMapper {
 ```
 
 **Manual DI (Factory):**
+
 ```typescript
 // interface/controllers/user.controller.ts
 export class UserController {
@@ -159,6 +163,7 @@ Client → API Gateway → User Service
 ```
 
 **Responsibilities:**
+
 - Request routing
 - Authentication/authorization
 - Rate limiting
@@ -184,11 +189,13 @@ const result = await breaker.fire(requestParams);
 ### Saga Pattern (Distributed Transactions)
 
 **Choreography:**
+
 ```
 Order → "OrderCreated" → Payment → "PaymentReserved" → Inventory → "StockReserved"
 ```
 
 **Orchestration:**
+
 ```
 Saga Orchestrator → Order → Payment → Inventory → Shipping
 ```
@@ -207,7 +214,7 @@ Store events, not current state:
   { type: 'AccountCreated', userId: '123' },
   { type: 'MoneyDeposited', amount: 1000 },
   { type: 'MoneyWithdrawn', amount: 500 },
-]
+];
 
 // Reconstruct state by replaying
 const balance = events.reduce((acc, event) => {

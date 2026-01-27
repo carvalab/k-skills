@@ -5,6 +5,7 @@
 **Critical/Major require PROOF, not suspicion.**
 
 Before flagging Critical or Major, answer:
+
 - "I traced the code and confirmed the issue exists because [specific reason]."
 - "Did I trace the complete code path, or am I assuming based on a pattern?"
 - "Can I explain exactly why this fails, with specific line references?"
@@ -19,6 +20,7 @@ If you cannot answer YES to all, **read more code or downgrade the severity**.
 **Definition**: Issues that could cause immediate, severe harm.
 
 **Examples**:
+
 - Security vulnerabilities (SQL injection, XSS, auth bypass)
 - Data loss or corruption
 - Broken builds that block CI/CD
@@ -35,6 +37,7 @@ If you cannot answer YES to all, **read more code or downgrade the severity**.
 **Definition**: Significant issues that affect functionality or long-term health.
 
 **Examples**:
+
 - Bugs that affect user-facing features
 - Performance issues (N+1 queries, memory leaks)
 - Architectural violations that increase tech debt
@@ -51,6 +54,7 @@ If you cannot answer YES to all, **read more code or downgrade the severity**.
 **Definition**: Issues that don't affect functionality but reduce code quality.
 
 **Examples**:
+
 - Code style inconsistencies
 - Suboptimal but working implementations
 - Missing tests for non-critical paths
@@ -67,6 +71,7 @@ If you cannot answer YES to all, **read more code or downgrade the severity**.
 **Definition**: Nice-to-have improvements, not problems.
 
 **Examples**:
+
 - Optimization opportunities (not bugs)
 - Alternative approaches that might be cleaner
 - Suggestions for future refactoring

@@ -148,20 +148,21 @@ Run with: `go run scripts/analyze/main.go ./internal`
 **Entry Points:** cmd/api/main.go, cmd/worker/main.go
 
 ## Structure
-
 ```
+
 cmd/
-├── api/           # HTTP API server
-└── worker/        # Background worker
+├── api/ # HTTP API server
+└── worker/ # Background worker
 
 internal/
-├── handlers/      # HTTP handlers
-├── services/      # Business logic
-├── repository/    # Data access
-└── models/        # Domain models
+├── handlers/ # HTTP handlers
+├── services/ # Business logic
+├── repository/ # Data access
+└── models/ # Domain models
 
 pkg/
-└── client/        # Public SDK
+└── client/ # Public SDK
+
 ```
 
 ## Key Packages

@@ -22,12 +22,14 @@ WHERE user_id = 123 AND created_at > '2026-01-01';
 ```
 
 **Index Types:**
+
 - **B-tree** - Default, equality/range queries
 - **Hash** - Fast equality, no range
 - **GIN** - Full-text, JSONB
 - **GiST** - Geospatial
 
 **Don't Index:**
+
 - Small tables (<1000 rows)
 - Frequently updated columns
 - Low-cardinality columns (boolean)
@@ -185,13 +187,14 @@ Primary (Write) → Replica 1 (Read)
 ```
 
 ```typescript
-await primaryDb.users.create(userData);  // Write
-const users = await replicaDb.users.findAll();  // Read
+await primaryDb.users.create(userData); // Write
+const users = await replicaDb.users.findAll(); // Read
 ```
 
 ## Performance Checklist
 
 ### Database
+
 - [ ] Indexes on query columns
 - [ ] Connection pooling
 - [ ] N+1 queries eliminated
@@ -199,12 +202,14 @@ const users = await replicaDb.users.findAll();  // Read
 - [ ] EXPLAIN ANALYZE reviewed
 
 ### Caching
+
 - [ ] Redis for hot data
 - [ ] TTL configured
 - [ ] Invalidation on writes
-- [ ] >80% hit rate
+- [ ] > 80% hit rate
 
 ### Application
+
 - [ ] Async processing for long tasks
 - [ ] Response compression (gzip)
 - [ ] Load balancing

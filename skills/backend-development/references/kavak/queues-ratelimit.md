@@ -13,6 +13,7 @@ Webhook/API → Redis List (buffer) → Batch Processor → PostgreSQL (River/pg
 ```
 
 **Why this pattern?**
+
 - Redis handles traffic spikes (fast writes)
 - PostgreSQL stores jobs durably (ACID, retries)
 - Batch insert via COPY FROM is efficient
@@ -20,12 +21,12 @@ Webhook/API → Redis List (buffer) → Batch Processor → PostgreSQL (River/pg
 
 ## Technology Selection
 
-| Need | Go | Node.js |
-|------|-----|---------|
-| Job queue | River Queue | pg-boss |
-| Spike buffer | Redis list | Redis list |
-| Batch insert | River `InsertManyFast` | pg-boss `send` batch |
-| Rate limiting | River snooze | pg-boss throttle |
+| Need          | Go                     | Node.js              |
+| ------------- | ---------------------- | -------------------- |
+| Job queue     | River Queue            | pg-boss              |
+| Spike buffer  | Redis list             | Redis list           |
+| Batch insert  | River `InsertManyFast` | pg-boss `send` batch |
+| Rate limiting | River snooze           | pg-boss throttle     |
 
 **Note:** Don't use BullMQ. Use pg-boss with Redis buffer pattern for consistency.
 
@@ -119,6 +120,7 @@ func (r *RateLimiter) Limit(ctx context.Context, key string) (blocksAhead int, e
 ```
 
 **Common limits:**
+
 - WhatsApp Global: 20,000/minute
 - Default API: 5,000/minute
 
@@ -198,13 +200,13 @@ periodicJobs := []*river.PeriodicJob{
 
 ## When to Use What
 
-| Scenario | Go | Node.js |
-|----------|-----|---------|
-| Low-volume jobs | River Queue directly | pg-boss directly |
-| High-volume webhook | Redis buffer → River | Redis buffer → pg-boss |
-| External API with rate limit | River snooze | pg-boss throttle |
-| Event to other services | kbroker | kbroker |
-| Scheduled/cron task | River periodic | pg-boss schedule |
+| Scenario                     | Go                   | Node.js                |
+| ---------------------------- | -------------------- | ---------------------- |
+| Low-volume jobs              | River Queue directly | pg-boss directly       |
+| High-volume webhook          | Redis buffer → River | Redis buffer → pg-boss |
+| External API with rate limit | River snooze         | pg-boss throttle       |
+| Event to other services      | kbroker              | kbroker                |
+| Scheduled/cron task          | River periodic       | pg-boss schedule       |
 
 ## pg-boss (Node.js)
 
@@ -219,10 +221,10 @@ await boss.start();
 
 // Create queue with retry config
 await boss.createQueue('email-send', {
-    retryLimit: 3,
-    retryDelay: 30,
-    retryBackoff: true,
-    deadLetter: 'email-dlq',
+  retryLimit: 3,
+  retryDelay: 30,
+  retryBackoff: true,
+  deadLetter: 'email-dlq',
 });
 
 // Direct send (low volume)
@@ -230,17 +232,18 @@ await boss.send('email-send', { email: 'user@example.com' });
 
 // Worker
 await boss.work('email-send', { batchSize: 10 }, async (jobs) => {
-    for (const job of jobs) {
-        await sendEmail(job.data);
-    }
+  for (const job of jobs) {
+    await sendEmail(job.data);
+  }
 });
 
 // Throttle: 1 job per user per hour
-await boss.sendThrottled('user-notification',
-    { message: 'Update' },
-    {},
-    3600,      // 1 hour window
-    userId     // Throttle key
+await boss.sendThrottled(
+  'user-notification',
+  { message: 'Update' },
+  {},
+  3600, // 1 hour window
+  userId // Throttle key
 );
 
 // Cron scheduling
@@ -261,24 +264,24 @@ const BUFFER_KEY = 'queue:batch:processor';
 
 // 1. Webhook handler: Push to Redis (fast)
 async function handleWebhook(data: any) {
-    const wrapper = JSON.stringify({ kind: 'email-send', payload: data });
-    await redis.rpush(BUFFER_KEY, wrapper);
+  const wrapper = JSON.stringify({ kind: 'email-send', payload: data });
+  await redis.rpush(BUFFER_KEY, wrapper);
 }
 
 // 2. Batch processor: Redis → pg-boss (runs periodically)
 async function processBatch() {
-    const pipe = redis.pipeline();
-    pipe.lrange(BUFFER_KEY, 0, 49999);      // Get up to 50k items
-    pipe.ltrim(BUFFER_KEY, 50000, -1);      // Remove processed
-    const [[, items]] = await pipe.exec();
+  const pipe = redis.pipeline();
+  pipe.lrange(BUFFER_KEY, 0, 49999); // Get up to 50k items
+  pipe.ltrim(BUFFER_KEY, 50000, -1); // Remove processed
+  const [[, items]] = await pipe.exec();
 
-    if (!items?.length) return;
+  if (!items?.length) return;
 
-    // Batch insert to pg-boss
-    for (const item of items as string[]) {
-        const { kind, payload } = JSON.parse(item);
-        await boss.send(kind, payload);
-    }
+  // Batch insert to pg-boss
+  for (const item of items as string[]) {
+    const { kind, payload } = JSON.parse(item);
+    await boss.send(kind, payload);
+  }
 }
 
 // 3. Run batch processor every 5 seconds

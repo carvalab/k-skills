@@ -12,14 +12,14 @@ aws --profile development ecr get-login-password --region us-west-2 | \
 
 ## Recommended Base Images
 
-| Purpose | Image |
-|---------|-------|
-| **Production runtime** | `docker-debian:trixie-slim` |
-| **Go build** | `docker-golang-build:1.25` |
-| **Go runtime** | `docker-golang:1.25` or `docker-debian:trixie-slim` |
-| **Node.js** | `docker-node:24` |
-| **Java runtime** | `docker-java:21` |
-| **Python** | `docker-python:3.13` |
+| Purpose                | Image                                               |
+| ---------------------- | --------------------------------------------------- |
+| **Production runtime** | `docker-debian:trixie-slim`                         |
+| **Go build**           | `docker-golang-build:1.25`                          |
+| **Go runtime**         | `docker-golang:1.25` or `docker-debian:trixie-slim` |
+| **Node.js**            | `docker-node:24`                                    |
+| **Java runtime**       | `docker-java:21`                                    |
+| **Python**             | `docker-python:3.13`                                |
 
 ## Go Application (Recommended)
 
@@ -134,12 +134,12 @@ Containers have read-only filesystem. Use `/tmp` for writes or request a mounted
 
 ### docker-golang-build:1.25
 
-| Tool | Version |
-|------|---------|
-| Go SDK | 1.25 |
-| golangci-lint | v2.4.0 |
-| goreleaser | v2.11.2 |
-| dbmate | v2.27.0 |
+| Tool          | Version |
+| ------------- | ------- |
+| Go SDK        | 1.25    |
+| golangci-lint | v2.4.0  |
+| goreleaser    | v2.11.2 |
+| dbmate        | v2.27.0 |
 
 ### CI Usage
 
@@ -217,11 +217,11 @@ docker run --rm your-image cat /etc/compliance-marker
 
 ## Source Repositories
 
-| Image | Repository |
-|-------|------------|
-| docker-debian | [gitlab.com/kavak-it/docker-debian](https://gitlab.com/kavak-it/docker-debian) |
+| Image               | Repository                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------ |
+| docker-debian       | [gitlab.com/kavak-it/docker-debian](https://gitlab.com/kavak-it/docker-debian)             |
 | docker-golang-build | [gitlab.com/kavak-it/docker-golang-build](https://gitlab.com/kavak-it/docker-golang-build) |
-| docker-golang | [gitlab.com/kavak-it/docker-golang](https://gitlab.com/kavak-it/docker-golang) |
-| docker-node | [gitlab.com/kavak-it/docker-node](https://gitlab.com/kavak-it/docker-node) |
-| docker-java | [gitlab.com/kavak-it/docker-java](https://gitlab.com/kavak-it/docker-java) |
-| docker-python | [gitlab.com/kavak-it/docker-python](https://gitlab.com/kavak-it/docker-python) |
+| docker-golang       | [gitlab.com/kavak-it/docker-golang](https://gitlab.com/kavak-it/docker-golang)             |
+| docker-node         | [gitlab.com/kavak-it/docker-node](https://gitlab.com/kavak-it/docker-node)                 |
+| docker-java         | [gitlab.com/kavak-it/docker-java](https://gitlab.com/kavak-it/docker-java)                 |
+| docker-python       | [gitlab.com/kavak-it/docker-python](https://gitlab.com/kavak-it/docker-python)             |

@@ -7,11 +7,13 @@ OAuth 2.1, JWT, RBAC, and MFA patterns (2026).
 ### Key Changes from OAuth 2.0
 
 **Mandatory:**
+
 - PKCE for all clients
 - Exact redirect URI matching
 - State parameter for CSRF
 
 **Deprecated:**
+
 - Implicit grant flow
 - Resource owner password credentials
 - Bearer token in query strings
@@ -23,10 +25,7 @@ import crypto from 'crypto';
 
 // Step 1: Generate code verifier and challenge
 const codeVerifier = crypto.randomBytes(32).toString('base64url');
-const codeChallenge = crypto
-  .createHash('sha256')
-  .update(codeVerifier)
-  .digest('base64url');
+const codeChallenge = crypto.createHash('sha256').update(codeVerifier).digest('base64url');
 
 // Step 2: Build authorization URL
 const authUrl = new URL('https://auth.example.com/authorize');
@@ -68,16 +67,12 @@ const tokenResponse = await fetch('https://auth.example.com/token', {
 import jwt from 'jsonwebtoken';
 
 // Generate JWT
-const accessToken = jwt.sign(
-  { sub: user.id, email: user.email, roles: user.roles },
-  process.env.JWT_PRIVATE_KEY,
-  {
-    algorithm: 'RS256',
-    expiresIn: '15m',
-    issuer: 'https://api.example.com',
-    audience: 'https://app.example.com',
-  }
-);
+const accessToken = jwt.sign({ sub: user.id, email: user.email, roles: user.roles }, process.env.JWT_PRIVATE_KEY, {
+  algorithm: 'RS256',
+  expiresIn: '15m',
+  issuer: 'https://api.example.com',
+  audience: 'https://app.example.com',
+});
 
 // Verify JWT
 const decoded = jwt.verify(token, process.env.JWT_PUBLIC_KEY, {
@@ -255,18 +250,20 @@ hash := argon2.IDKey([]byte(password), salt, 3, 64*1024, 4, 32)
 import session from 'express-session';
 import RedisStore from 'connect-redis';
 
-app.use(session({
-  store: new RedisStore({ client: redisClient }),
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: true,      // HTTPS only
-    httpOnly: true,    // No JavaScript access
-    sameSite: 'strict', // CSRF protection
-    maxAge: 1000 * 60 * 15, // 15 minutes
-  },
-}));
+app.use(
+  session({
+    store: new RedisStore({ client: redisClient }),
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: true, // HTTPS only
+      httpOnly: true, // No JavaScript access
+      sameSite: 'strict', // CSRF protection
+      maxAge: 1000 * 60 * 15, // 15 minutes
+    },
+  })
+);
 ```
 
 ## API Key Authentication
@@ -286,11 +283,11 @@ const keyRecord = await db.apiKeys.findOne({ hashedKey: providedHash });
 
 ## Authentication Decision Matrix
 
-| Use Case | Approach |
-|----------|----------|
-| Web/Mobile/SPA | OAuth 2.1 + PKCE + JWT |
-| Server-to-server | Client credentials |
-| Third-party API | API keys with scopes |
-| High-security | WebAuthn + MFA |
+| Use Case         | Approach               |
+| ---------------- | ---------------------- |
+| Web/Mobile/SPA   | OAuth 2.1 + PKCE + JWT |
+| Server-to-server | Client credentials     |
+| Third-party API  | API keys with scopes   |
+| High-security    | WebAuthn + MFA         |
 
 **Security essentials:** OAuth 2.1 + PKCE, 15min JWT expiry, refresh token rotation, RBAC deny-by-default, Argon2id passwords, secure cookies (HttpOnly, Secure, SameSite), rate limiting, audit logging.

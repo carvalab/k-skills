@@ -112,6 +112,7 @@ finally { client.release(); }
 ## OpenTelemetry + DataDog Tracing
 
 **Go:**
+
 ```go
 import (
     "go.opentelemetry.io/otel"
@@ -131,15 +132,21 @@ func initTracer() func() {
 ```
 
 **Node.js:**
+
 ```typescript
 // Initialize BEFORE other imports
 import tracer from 'dd-trace';
 tracer.init({ service: 'my-api', env: process.env.KAVAK_ENVIRONMENT });
 
 const span = tracer.startSpan('custom.operation');
-try { /* work */ span.setTag('result', 'success'); }
-catch (e) { span.setTag('error', e); throw e; }
-finally { span.finish(); }
+try {
+  /* work */ span.setTag('result', 'success');
+} catch (e) {
+  span.setTag('error', e);
+  throw e;
+} finally {
+  span.finish();
+}
 ```
 
 ## DataDog Metrics Cardinality
@@ -159,6 +166,7 @@ statsd.Incr("api.request", []string{
 ```
 
 **Rules:**
+
 - Max ~100 unique values per tag
 - Group values (status: 2xx, 4xx, 5xx)
 - IDs belong in traces/logs, not metrics

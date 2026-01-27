@@ -42,6 +42,7 @@ e) Detect framework patterns
 ### 2. Generate Codemaps
 
 Create `docs/CODEMAPS/` structure:
+
 ```
 docs/CODEMAPS/
 ├── INDEX.md          # Overview and navigation
@@ -55,6 +56,7 @@ docs/CODEMAPS/
 ### 3. Update Documentation
 
 Files to refresh:
+
 - `README.md` - Setup instructions, architecture overview
 - `docs/GUIDES/*.md` - Feature guides and tutorials
 - `CONTRIBUTING.md` - Development workflow
@@ -77,16 +79,20 @@ Each codemap follows this structure:
 **Entry Points:** list of main files
 
 ## Architecture
+
 [ASCII diagram]
 
 ## Key Modules
+
 | Module | Purpose | Exports | Dependencies |
-|--------|---------|---------|--------------|
+| ------ | ------- | ------- | ------------ |
 
 ## Data Flow
+
 [Description]
 
 ## External Dependencies
+
 - package - Purpose, Version
 ```
 
@@ -95,12 +101,14 @@ See `references/codemap-format.md` for complete specification.
 ## When to Update
 
 **ALWAYS update when:**
+
 - New major feature added
 - API routes changed
 - Dependencies added/removed
 - Architecture significantly changed
 
 **OPTIONAL when:**
+
 - Minor bug fixes
 - Cosmetic changes
 - Internal refactoring
@@ -109,18 +117,19 @@ See `references/codemap-format.md` for complete specification.
 
 Detailed documentation for specific tasks:
 
-| Reference | Purpose |
-|-----------|---------|
-| `references/codemap-format.md` | Complete codemap specification |
+| Reference                        | Purpose                                  |
+| -------------------------------- | ---------------------------------------- |
+| `references/codemap-format.md`   | Complete codemap specification           |
 | `references/codemap-examples.md` | Frontend, backend, integrations examples |
-| `references/scripts.md` | Generation scripts (ts-morph, madge) |
-| `references/scripts-go.md` | Go-specific tools and scripts |
-| `references/maintenance.md` | Schedule and quality checklist |
-| `references/readme-template.md` | README update template |
+| `references/scripts.md`          | Generation scripts (ts-morph, madge)     |
+| `references/scripts-go.md`       | Go-specific tools and scripts            |
+| `references/maintenance.md`      | Schedule and quality checklist           |
+| `references/readme-template.md`  | README update template                   |
 
 ## Quality Checklist
 
 Before committing:
+
 - [ ] Codemaps generated from actual code
 - [ ] All file paths verified
 - [ ] Code examples compile/run

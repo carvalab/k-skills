@@ -18,6 +18,7 @@ SOLID, DRY, YAGNI, KISS principles and clean code patterns.
 ```
 
 **Apply Clean Architecture/patterns to:**
+
 - New greenfield projects
 - New modules (when it fits existing style)
 - When explicitly asked to refactor
@@ -35,10 +36,18 @@ class User {
 }
 
 // GOOD: Separated
-class User { /* data only */ }
-class UserRepository { save(user: User) {} }
-class EmailService { sendWelcomeEmail(user: User) {} }
-class ReportGenerator { generateUserReport(user: User) {} }
+class User {
+  /* data only */
+}
+class UserRepository {
+  save(user: User) {}
+}
+class EmailService {
+  sendWelcomeEmail(user: User) {}
+}
+class ReportGenerator {
+  generateUserReport(user: User) {}
+}
 ```
 
 ### Open/Closed (OCP)
@@ -47,8 +56,11 @@ class ReportGenerator { generateUserReport(user: User) {} }
 // BAD: Modify to add new payment
 class PaymentProcessor {
   process(amount: number, method: string) {
-    if (method === 'stripe') { /* ... */ }
-    else if (method === 'paypal') { /* ... */ }
+    if (method === 'stripe') {
+      /* ... */
+    } else if (method === 'paypal') {
+      /* ... */
+    }
   }
 }
 
@@ -58,7 +70,9 @@ interface PaymentStrategy {
 }
 
 class StripePayment implements PaymentStrategy {
-  async process(amount: number) { /* Stripe logic */ }
+  async process(amount: number) {
+    /* Stripe logic */
+  }
 }
 
 class PaymentProcessor {
@@ -73,29 +87,55 @@ class PaymentProcessor {
 
 ```typescript
 // BAD: Penguin breaks Bird contract
-class Bird { fly() {} }
+class Bird {
+  fly() {}
+}
 class Penguin extends Bird {
-  fly() { throw new Error("Can't fly"); }
+  fly() {
+    throw new Error("Can't fly");
+  }
 }
 
 // GOOD: Proper abstraction
-interface Bird { move(): void; }
-class FlyingBird implements Bird { move() { this.fly(); } }
-class Penguin implements Bird { move() { this.swim(); } }
+interface Bird {
+  move(): void;
+}
+class FlyingBird implements Bird {
+  move() {
+    this.fly();
+  }
+}
+class Penguin implements Bird {
+  move() {
+    this.swim();
+  }
+}
 ```
 
 ### Interface Segregation (ISP)
 
 ```typescript
 // BAD: Robot forced to implement eat/sleep
-interface Worker { work(); eat(); sleep(); }
+interface Worker {
+  work();
+  eat();
+  sleep();
+}
 
 // GOOD: Segregated interfaces
-interface Workable { work(): void; }
-interface Eatable { eat(): void; }
+interface Workable {
+  work(): void;
+}
+interface Eatable {
+  eat(): void;
+}
 
-class Human implements Workable, Eatable { /* ... */ }
-class Robot implements Workable { /* ... */ }
+class Human implements Workable, Eatable {
+  /* ... */
+}
+class Robot implements Workable {
+  /* ... */
+}
 ```
 
 ### Dependency Inversion (DIP)
@@ -140,7 +180,9 @@ class PostgresUserRepository implements UserRepository {
 ### Factory Pattern
 
 ```typescript
-interface Notification { send(msg: string): Promise<void>; }
+interface Notification {
+  send(msg: string): Promise<void>;
+}
 class NotificationFactory {
   static create(type: 'email' | 'sms' | 'push'): Notification {
     const map = { email: EmailNotification, sms: SMSNotification, push: PushNotification };
@@ -152,11 +194,17 @@ class NotificationFactory {
 ### Observer Pattern
 
 ```typescript
-interface Observer { update(event: any): void; }
+interface Observer {
+  update(event: any): void;
+}
 class EventEmitter {
   private observers: Map<string, Observer[]> = new Map();
-  subscribe(event: string, obs: Observer) { /* add to map */ }
-  emit(event: string, data: any) { this.observers.get(event)?.forEach(o => o.update(data)); }
+  subscribe(event: string, obs: Observer) {
+    /* add to map */
+  }
+  emit(event: string, data: any) {
+    this.observers.get(event)?.forEach((o) => o.update(data));
+  }
 }
 ```
 
@@ -218,7 +266,7 @@ await retryWithBackoff(() => externalApi.call());
 
 // ✅ GOOD: Public API doc
 /** Creates user and sends welcome email. Throws if email exists. */
-async function createUser(email: string): Promise<User> { }
+async function createUser(email: string): Promise<User> {}
 ```
 
 **Comment:** Complex logic, workarounds, public APIs. **Don't comment:** Obvious code, every function.
@@ -241,15 +289,15 @@ function validateEmail(email: string) {
 // BAD: Building features "just in case"
 class UserService {
   createUser() {}
-  createUserWithRole() {}      // Not needed yet
-  createUserBatch() {}         // Not needed yet
-  createUserFromCSV() {}       // Not needed yet
+  createUserWithRole() {} // Not needed yet
+  createUserBatch() {} // Not needed yet
+  createUserFromCSV() {} // Not needed yet
   createUserWithInvitation() {} // Not needed yet
 }
 
 // GOOD: Only what's needed NOW
 class UserService {
-  createUser() {}  // Add others when actually needed
+  createUser() {} // Add others when actually needed
 }
 ```
 
@@ -266,7 +314,9 @@ class UserNameFormatter {
     this.strategy = strategyFactory.create('name');
     this.cache = new Map();
   }
-  format(user: User): string { /* 50 lines */ }
+  format(user: User): string {
+    /* 50 lines */
+  }
 }
 
 // GOOD: Simple solution

@@ -5,16 +5,17 @@
 ## Overview
 
 The Unified Observability Framework provides consistent observability across all Kavak applications:
+
 - **Logging**: Structured JSON logs with RFC3339 microsecond timestamps
 - **Metrics**: DataDog StatsD with automatic namespace prefixing
 - **Tracing**: OpenTelemetry + dd-trace (see `debugging.md`)
 
 ## SDK Packages
 
-| Language | Logging | Metrics |
-|----------|---------|---------|
-| Go | `gitlab.com/kavak-it/go-sdk/kvklog` | `gitlab.com/kavak-it/go-sdk/kvkmetric` |
-| TypeScript | `@kavak-it/ts-sdk` (logger) | `@kavak-it/ts-sdk` (metricClient) |
+| Language   | Logging                             | Metrics                                |
+| ---------- | ----------------------------------- | -------------------------------------- |
+| Go         | `gitlab.com/kavak-it/go-sdk/kvklog` | `gitlab.com/kavak-it/go-sdk/kvkmetric` |
+| TypeScript | `@kavak-it/ts-sdk` (logger)         | `@kavak-it/ts-sdk` (metricClient)      |
 
 ## Logging
 
@@ -33,6 +34,7 @@ All logs must follow this structure:
 ```
 
 **Field Requirements:**
+
 - `date`: RFC3339 with **microsecond precision** (6 digits: `.123456`)
 - `status`: Uppercase (DEBUG, INFO, WARN, ERROR)
 - `message`: 50-200 characters, actionable
@@ -63,14 +65,14 @@ kvklog.LogError(ctx, "failed to process payment",
 import { logger } from '@kavak-it/ts-sdk';
 
 // Logger is singleton (module-level export)
-logger.info("User profile updated", {
+logger.info('User profile updated', {
   user_id: hashedUserID,
-  field: "email",
+  field: 'email',
 });
 
-logger.error("Failed to process payment", {
+logger.error('Failed to process payment', {
   payment_id: paymentID,
-  error_code: "INVALID_CARD",
+  error_code: 'INVALID_CARD',
   retry_attempt: 3,
   error: err.message,
 });
@@ -82,15 +84,15 @@ Use state-machine pattern for operation logging:
 
 ```typescript
 // Start: Present progressive
-logger.info("Processing user payment", { payment_id: id });
+logger.info('Processing user payment', { payment_id: id });
 
 try {
   await processPayment(id);
   // Success: Past tense
-  logger.info("Payment processed", { payment_id: id });
+  logger.info('Payment processed', { payment_id: id });
 } catch (error) {
   // Failure: Past tense with "Failed"
-  logger.error("Failed to process payment", {
+  logger.error('Failed to process payment', {
     payment_id: id,
     error_code: error.code,
     error_message: error.message,
@@ -100,11 +102,11 @@ try {
 
 ### Log Levels
 
-| Level | Use Case |
-|-------|----------|
-| DEBUG | Development only, detailed flow tracing |
-| INFO | Normal flow, state changes, business events |
-| WARN | Recoverable errors, degraded functionality |
+| Level | Use Case                                           |
+| ----- | -------------------------------------------------- |
+| DEBUG | Development only, detailed flow tracing            |
+| INFO  | Normal flow, state changes, business events        |
+| WARN  | Recoverable errors, degraded functionality         |
 | ERROR | Unrecoverable errors, requires immediate attention |
 
 ### Environment Configuration
@@ -158,21 +160,13 @@ kvkmetric.Timing(ctx, "api.response.time", duration, []string{
 import { metricClient } from '@kavak-it/ts-sdk';
 
 // Counter
-metricClient.increment('orders.created.total', 1, [
-  'payment_method:credit_card',
-  'status:success',
-]);
+metricClient.increment('orders.created.total', 1, ['payment_method:credit_card', 'status:success']);
 
 // Gauge
-metricClient.gauge('orders.pending.count', pendingCount, [
-  'priority:high',
-]);
+metricClient.gauge('orders.pending.count', pendingCount, ['priority:high']);
 
 // Histogram
-metricClient.histogram('api.response.time', duration, [
-  'endpoint:/users',
-  'method:GET',
-]);
+metricClient.histogram('api.response.time', duration, ['endpoint:/users', 'method:GET']);
 ```
 
 ### Cardinality Rules (CRITICAL)
@@ -182,21 +176,22 @@ metricClient.histogram('api.response.time', duration, [
 ```typescript
 // BAD: Creates millions of unique metrics
 metricClient.increment('api.request', 1, [
-  'user_id:user-12345',      // Unbounded
-  'order_id:order-67890',    // Unbounded
-  'request_id:req-abc123',   // Unbounded
+  'user_id:user-12345', // Unbounded
+  'order_id:order-67890', // Unbounded
+  'request_id:req-abc123', // Unbounded
 ]);
 
 // GOOD: Bounded tag values (~100 max unique values per tag)
 metricClient.increment('api.request', 1, [
-  'method:GET',              // Finite set
-  'status_class:2xx',        // Grouped (not exact code)
-  'endpoint:/users',         // Finite set
+  'method:GET', // Finite set
+  'status_class:2xx', // Grouped (not exact code)
+  'endpoint:/users', // Finite set
   'payment_method:credit_card',
 ]);
 ```
 
 **Tag Guidelines:**
+
 - Max ~100 unique values per tag
 - Use enums/categories, not raw values
 - Group similar values (`status_class:2xx` not `status:200`)
@@ -227,7 +222,7 @@ function maskEmail(email: string): string {
 // DNI: ***-***-1234
 // API key: abcd...xyz1 (first 4 + last 4)
 
-logger.info("Starting backup", { user_email: maskEmail(email) });
+logger.info('Starting backup', { user_email: maskEmail(email) });
 ```
 
 ## Context Objects
@@ -264,6 +259,7 @@ Standard context structures for logging:
 Both SDKs implement singleton pattern:
 
 **Go:**
+
 ```go
 // Thread-safe via sync.Once
 var logger struct {
@@ -280,6 +276,7 @@ func Logger() *zap.Logger {
 ```
 
 **TypeScript:**
+
 ```typescript
 // Module-level export (Node.js caching ensures singleton)
 export const logger = createKVKLogger();
@@ -289,6 +286,7 @@ export const metricClient = createMetricsClient();
 ## Graceful Degradation
 
 SDKs never crash the application:
+
 - Logging failures: Continue with basic logger
 - Metrics failures: Fall back to NoOp/FakeStatsD client
 - Always log warnings when fallback is used

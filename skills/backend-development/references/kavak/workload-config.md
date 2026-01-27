@@ -21,39 +21,40 @@
 # .kavak/config.yaml
 jobs:
   - name: my-email-sender
-    schedule: "0 4 * * *"      # 4 AM daily
+    schedule: '0 4 * * *' # 4 AM daily
     command:
-      - "node"
-      - "email-sender.js"
+      - 'node'
+      - 'email-sender.js'
 
   - name: my-data-sync
-    schedule: "*/15 * * * *"   # Every 15 minutes
+    schedule: '*/15 * * * *' # Every 15 minutes
     command:
-      - "./bin/sync"
+      - './bin/sync'
     resources:
-      cpu: "1000m"
-      memory: "1024Mi"
+      cpu: '1000m'
+      memory: '1024Mi'
 
-  - name: manual-task          # On-demand (no schedule)
+  - name: manual-task # On-demand (no schedule)
     command:
-      - "./bin/manual-task"
+      - './bin/manual-task'
 ```
 
 **Properties:**
 
-| Property | Required | Description |
-|----------|----------|-------------|
-| `name` | Yes | Job identifier (letters, numbers, hyphens) |
-| `schedule` | No | Cron expression (omit for on-demand) |
-| `command` | Yes | Command array [binary, ...args] |
-| `resources.cpu` | No | CPU allocation (default: workload CPU) |
-| `resources.memory` | No | Memory allocation (default: workload memory) |
+| Property           | Required | Description                                  |
+| ------------------ | -------- | -------------------------------------------- |
+| `name`             | Yes      | Job identifier (letters, numbers, hyphens)   |
+| `schedule`         | No       | Cron expression (omit for on-demand)         |
+| `command`          | Yes      | Command array [binary, ...args]              |
+| `resources.cpu`    | No       | CPU allocation (default: workload CPU)       |
+| `resources.memory` | No       | Memory allocation (default: workload memory) |
 
 **Cron expression tester**: https://www.crondrive.com/test-cron-expression
 
 ### On-Demand Jobs
 
 Jobs without `schedule` are triggered manually via Argo CD:
+
 1. Navigate to workload in Argo CD UI
 2. Locate on-demand job
 3. Click three dots menu → "Create Job"
@@ -98,6 +99,7 @@ paths:
 ```
 
 **Requirements:**
+
 - Must be OpenAPI v3.0.x
 - Validated by CI: `validate_openapi_spec` job
 - Used for Developer Portal documentation
@@ -107,22 +109,22 @@ paths:
 
 Auto-injected environment variables:
 
-| Variable | Description |
-|----------|-------------|
-| `KAVAK_ENVIRONMENT` | `development` or `production` |
-| `KAVAK_WORKLOAD_FULL_NAME` | Full workload name |
-| `DD_AGENT_HOST` | Datadog agent host for metrics |
-| `STS_API_BASE_URL` | STS API endpoint |
+| Variable                   | Description                    |
+| -------------------------- | ------------------------------ |
+| `KAVAK_ENVIRONMENT`        | `development` or `production`  |
+| `KAVAK_WORKLOAD_FULL_NAME` | Full workload name             |
+| `DD_AGENT_HOST`            | Datadog agent host for metrics |
+| `STS_API_BASE_URL`         | STS API endpoint               |
 
 ### Service-Specific Variables
 
 Added when services are attached to product:
 
-| Service | Variables |
-|---------|-----------|
+| Service  | Variables                                  |
+| -------- | ------------------------------------------ |
 | Database | `DATABASE_URL`, `DB_HOST`, `DB_PORT`, etc. |
-| Redis | `REDIS_URL`, `REDIS_HOST`, `REDIS_PORT` |
-| S3 | `S3_BUCKET_NAME`, `AWS_REGION` |
+| Redis    | `REDIS_URL`, `REDIS_HOST`, `REDIS_PORT`    |
+| S3       | `S3_BUCKET_NAME`, `AWS_REGION`             |
 
 ## Workload Requirements
 

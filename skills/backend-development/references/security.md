@@ -7,6 +7,7 @@ OWASP Top 10 mitigation and security best practices (2026).
 ### 1. Broken Access Control (28% of vulnerabilities)
 
 **Mitigation:**
+
 - RBAC with deny-by-default
 - Server-side authorization (never client-side)
 - Log access control failures
@@ -22,6 +23,7 @@ async deleteUser(@Param('id') id: string) {
 ### 2. Cryptographic Failures
 
 **Mitigation:**
+
 - Argon2id for passwords
 - TLS 1.3 for transit
 - AES-256 for data at rest
@@ -41,6 +43,7 @@ const result = await db.query(query, [email]);
 ### 4. Insecure Design
 
 **Mitigation:**
+
 - Threat modeling during design
 - Defense in depth
 - Principle of least privilege
@@ -48,6 +51,7 @@ const result = await db.query(query, [email]);
 ### 5. Security Misconfiguration
 
 **Mitigation:**
+
 - Remove default accounts
 - Use security headers
 - Minimize attack surface
@@ -55,12 +59,14 @@ const result = await db.query(query, [email]);
 ```typescript
 import helmet from 'helmet';
 
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: { defaultSrc: ["'self'"] },
-  },
-  hsts: { maxAge: 31536000, includeSubDomains: true },
-}));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: { defaultSrc: ["'self'"] },
+    },
+    hsts: { maxAge: 31536000, includeSubDomains: true },
+  })
+);
 ```
 
 ### 6. Vulnerable Components
@@ -73,6 +79,7 @@ npm audit fix
 ### 7. Authentication Failures
 
 **Mitigation:**
+
 - MFA for admin accounts
 - Rate limiting (10 attempts/minute)
 - Strong passwords (12+ chars)
@@ -81,6 +88,7 @@ npm audit fix
 ### 8. Software & Data Integrity
 
 **Mitigation:**
+
 - Code signing
 - Lock file integrity
 - Secure CI/CD pipelines
@@ -88,6 +96,7 @@ npm audit fix
 ### 9. Logging & Monitoring Failures
 
 **Mitigation:**
+
 - Log authentication events
 - Centralized logging
 - Alerting on suspicious patterns
@@ -95,6 +104,7 @@ npm audit fix
 ### 10. SSRF (Server-Side Request Forgery)
 
 **Mitigation:**
+
 - Validate/sanitize URLs
 - Allow-list remote resources
 - Network segmentation
@@ -132,7 +142,7 @@ const clean = DOMPurify.sanitize(userInput);
 ```typescript
 const allowedFields = ['name', 'email', 'age'];
 const sanitized = Object.keys(input)
-  .filter(key => allowedFields.includes(key))
+  .filter((key) => allowedFields.includes(key))
   .reduce((obj, key) => ({ ...obj, [key]: input[key] }), {});
 ```
 
@@ -151,6 +161,7 @@ app.use('/api/', limiter);
 ```
 
 **Recommended Limits:**
+
 - Authentication: 10/15 min
 - Public APIs: 100/15 min
 - Authenticated: 1000/15 min

@@ -39,26 +39,27 @@ result, err := publisher.PublishScheduled(ctx, "my-topic", kbpublisher.Event{
 ```typescript
 // Node.js/TypeScript (no SDK yet)
 const response = await fetch('https://kbroker-inbox.prd.kavak.io/publish/my-topic', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${authToken}`,
-    },
-    body: JSON.stringify({ orderId: '123', status: 'completed' }),
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${authToken}`,
+  },
+  body: JSON.stringify({ orderId: '123', status: 'completed' }),
 });
 
 // Scheduled message
 await fetch('https://kbroker-inbox.prd.kavak.io/scheduled/my-topic', {
-    method: 'POST',
-    headers: {
-        'X-KB-ScheduledMinutes': '10',  // 10 minutes delay (min: 5)
-        'Authorization': `Bearer ${authToken}`,
-    },
-    body: JSON.stringify(payload),
+  method: 'POST',
+  headers: {
+    'X-KB-ScheduledMinutes': '10', // 10 minutes delay (min: 5)
+    Authorization: `Bearer ${authToken}`,
+  },
+  body: JSON.stringify(payload),
 });
 ```
 
 **Endpoints:**
+
 - Dev: `kbroker-inbox.dev.kavak.io`
 - Prod: `kbroker-inbox.prd.kavak.io`
 
@@ -86,6 +87,7 @@ func handleKBrokerEvent(w http.ResponseWriter, r *http.Request) {
 ```
 
 **Response codes:**
+
 - `2XX` → ACK (processed, move to next)
 - `Non-2XX` → NACK (retry with exponential backoff ~5 min)
 
@@ -94,16 +96,19 @@ func handleKBrokerEvent(w http.ResponseWriter, r *http.Request) {
 ## Authentication
 
 **Publisher (.kavak/config.yaml):**
+
 ```yaml
 auth:
   enabled: true
 ```
 
 **Token scopes:**
+
 - Publisher: `kbroker-inbox.event-publish` (audience: `kbroker-inbox`)
 - Consumer: `<product-workload>.event-receive`
 
 **Consumer auth config (.kavak/auth/auth.production.yaml):**
+
 ```yaml
 version: v1
 available_scopes:
@@ -145,6 +150,7 @@ kavak kbroker schema update
 ```
 
 **Topic types:**
+
 - **Public**: Multiple subscribers, requires JSON schema
 - **Private**: Few subscribers, schema optional
 
@@ -159,11 +165,12 @@ kavak kbroker connector create  # Select CDC
 **Auto-generated topic:** `cdc_<product>-<database>_<table>`
 
 **Event format:**
+
 ```json
 {
   "before": { "id": 1, "name": "old" },
   "after": { "id": 1, "name": "new" },
-  "op": "u"  // c=create, u=update, d=delete
+  "op": "u" // c=create, u=update, d=delete
 }
 ```
 

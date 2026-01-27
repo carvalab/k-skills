@@ -12,13 +12,13 @@ Kavak uses **STS-API** (Security Token Service) for all microservice authenticat
 
 ## Auth SDK Versions
 
-| SDK | Version | Import Path |
-|-----|---------|-------------|
-| Go (1.19-1.24) | v1.2.2 | `gitlab.com/kavak-it/auth-go-sdk/auth` |
-| Go (1.25+) | v2.0.3 | `gitlab.com/kavak-it/auth-go-sdk/v2/auth` |
-| Node.js | v4.2.0+ | `@kavak/platform-auth-service-sdk` |
-| Java | v1.1.2 / v2.6.2 (Spring) | `com.kavak.platform.authsdk` |
-| Python | v1.1.0+ | `kavak_auth` |
+| SDK            | Version                  | Import Path                               |
+| -------------- | ------------------------ | ----------------------------------------- |
+| Go (1.19-1.24) | v1.2.2                   | `gitlab.com/kavak-it/auth-go-sdk/auth`    |
+| Go (1.25+)     | v2.0.3                   | `gitlab.com/kavak-it/auth-go-sdk/v2/auth` |
+| Node.js        | v4.2.0+                  | `@kavak/platform-auth-service-sdk`        |
+| Java           | v1.1.2 / v2.6.2 (Spring) | `com.kavak.platform.authsdk`              |
+| Python         | v1.1.0+                  | `kavak_auth`                              |
 
 ## Go SDK Usage
 
@@ -82,38 +82,38 @@ import { createClient } from '@kavak/platform-auth-service-sdk';
 
 // Create client (cache enabled by default)
 const client = createClient({
-    clientId: 'my-app',
-    clientSecret: 'my-secret',
+  clientId: 'my-app',
+  clientSecret: 'my-secret',
 });
 
 // Generate M2M token
 const result = await client.generateToken({
-    audience: ['users-api'],
-    scopes: ['users-api.public'],
+  audience: ['users-api'],
+  scopes: ['users-api.public'],
 });
 
 // Validate token
 const validation = await client.validateToken({ token });
 if (validation.active) {
-    console.log(validation.sub, validation.scopes);
+  console.log(validation.sub, validation.scopes);
 }
 
 // TokenHolder for auto-refresh (ONLY at startup)
 let tokenHolder: TokenHolder;
 
 async function startup() {
-    const result = await client.generateToken({
-        audience: ['users-api'],
-        scopes: ['users-api.public'],
-        refreshTokenAutomatically: true,
-    });
-    tokenHolder = result.tokenHolder;
+  const result = await client.generateToken({
+    audience: ['users-api'],
+    scopes: ['users-api.public'],
+    refreshTokenAutomatically: true,
+  });
+  tokenHolder = result.tokenHolder;
 }
 
 // In handlers - always use cached tokenHolder
 app.get('/api/data', async (req, res) => {
-    const token = tokenHolder.getToken();
-    // ...
+  const token = tokenHolder.getToken();
+  // ...
 });
 ```
 
@@ -134,28 +134,28 @@ result, err := client.ExchangeToken(ctx, exchangeInput)
 
 ### Token Types
 
-| IDP | Token Type |
-|-----|------------|
-| Cognito | `urn:kavak:token-type:cognito` |
-| Okta | `urn:kavak:token-type:okta` |
-| Google | `urn:kavak:token-type:google` |
+| IDP       | Token Type                       |
+| --------- | -------------------------------- |
+| Cognito   | `urn:kavak:token-type:cognito`   |
+| Okta      | `urn:kavak:token-type:okta`      |
+| Google    | `urn:kavak:token-type:google`    |
 | Forgerock | `urn:kavak:token-type:forgerock` |
-| API Key | `urn:kavak:token-type:apikey` |
-| Session | `urn:kavak:token-type:session` |
+| API Key   | `urn:kavak:token-type:apikey`    |
+| Session   | `urn:kavak:token-type:session`   |
 
 ## Custom Claims
 
 STS tokens include Kavak-specific claims:
 
-| Claim | Key | Description |
-|-------|-----|-------------|
-| Client ID | `client_id` | Application that generated the token |
-| Initial Token Type | `itt` | Original token type before exchange |
-| IDP User ID | `iui` | User ID from identity provider |
-| Kavak User ID | `k_usr_id` | Olimpo user ID |
-| Kavak User Email | `k_usr_email` | User email |
-| Kavak Groups | `k_groups` | User group memberships |
-| Kavak Tenant | `k_tenant` | Tenant identifier |
+| Claim              | Key           | Description                          |
+| ------------------ | ------------- | ------------------------------------ |
+| Client ID          | `client_id`   | Application that generated the token |
+| Initial Token Type | `itt`         | Original token type before exchange  |
+| IDP User ID        | `iui`         | User ID from identity provider       |
+| Kavak User ID      | `k_usr_id`    | Olimpo user ID                       |
+| Kavak User Email   | `k_usr_email` | User email                           |
+| Kavak Groups       | `k_groups`    | User group memberships               |
+| Kavak Tenant       | `k_tenant`    | Tenant identifier                    |
 
 ## Caching
 
@@ -168,20 +168,20 @@ SDK caching is enabled by default but requires server-side configuration:
 
 **Cache Configuration** (request from Platform team via `kavak automation` CLI):
 
-| Operation | Cacheable | Recommended TTL |
-|-----------|-----------|-----------------|
-| Token Introspection | Yes | `min(token_expiry, 300s)` |
-| Token Generation | Yes (via TokenHolder) | Token lifetime - 120s |
-| Token Exchange | Yes | `min(token_expiry, 60s)` |
+| Operation           | Cacheable             | Recommended TTL           |
+| ------------------- | --------------------- | ------------------------- |
+| Token Introspection | Yes                   | `min(token_expiry, 300s)` |
+| Token Generation    | Yes (via TokenHolder) | Token lifetime - 120s     |
+| Token Exchange      | Yes                   | `min(token_expiry, 60s)`  |
 
 ## Environment Variables
 
 Auto-injected by manifest-api:
 
-| Variable | Description |
-|----------|-------------|
-| `STS_API_BASE_URL` | STS-API endpoint (internal: `http://sts-api.svc.kavak.io`) |
-| `KAVAK_ENVIRONMENT` | Current environment (`development` or `production`) |
+| Variable            | Description                                                |
+| ------------------- | ---------------------------------------------------------- |
+| `STS_API_BASE_URL`  | STS-API endpoint (internal: `http://sts-api.svc.kavak.io`) |
+| `KAVAK_ENVIRONMENT` | Current environment (`development` or `production`)        |
 
 ## Auth Configuration (.kavak/auth/)
 
@@ -200,12 +200,12 @@ audiences:
 
 ## Performance
 
-| Operation | Typical Latency |
-|-----------|-----------------|
-| Token Generation (cache hit) | < 0.1ms |
-| Token Generation (cache miss) | 3-8ms |
-| Token Introspection (STS token) | < 1ms |
-| Token Exchange | 10-100ms |
+| Operation                       | Typical Latency |
+| ------------------------------- | --------------- |
+| Token Generation (cache hit)    | < 0.1ms         |
+| Token Generation (cache miss)   | 3-8ms           |
+| Token Introspection (STS token) | < 1ms           |
+| Token Exchange                  | 10-100ms        |
 
 ## Middleware Example (Go + Chi)
 

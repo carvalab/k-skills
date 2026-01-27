@@ -61,7 +61,7 @@ export class User {
   constructor(
     private id: string,
     private email: string,
-    private passwordHash: string,
+    private passwordHash: string
   ) {
     this.validateEntity();
   }
@@ -95,7 +95,7 @@ class AppError extends Error {
   constructor(
     message: string,
     public statusCode: number = 500,
-    public code?: string,
+    public code?: string
   ) {
     super(message);
     this.name = this.constructor.name;
@@ -110,7 +110,10 @@ class NotFoundError extends AppError {
 }
 
 class ValidationError extends AppError {
-  constructor(message: string, public details?: any[]) {
+  constructor(
+    message: string,
+    public details?: any[]
+  ) {
     super(message, 400, 'VALIDATION_ERROR');
   }
 }
@@ -121,8 +124,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
-    const status = exception instanceof HttpException
-      ? exception.getStatus() : 500;
+    const status = exception instanceof HttpException ? exception.getStatus() : 500;
 
     logger.error(exception);
     response.status(status).json({
@@ -140,19 +142,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
 ```typescript
 // Parallel (fast)
-const [user, orders, preferences] = await Promise.all([
-  getUser(id),
-  getOrders(id),
-  getPreferences(id),
-]);
+const [user, orders, preferences] = await Promise.all([getUser(id), getOrders(id), getPreferences(id)]);
 
 // Independent operations (don't fail all)
-const results = await Promise.allSettled([
-  sendEmail(user),
-  sendSMS(user),
-  sendPush(user),
-]);
-const failed = results.filter(r => r.status === 'rejected');
+const results = await Promise.allSettled([sendEmail(user), sendSMS(user), sendPush(user)]);
+const failed = results.filter((r) => r.status === 'rejected');
 if (failed.length) logger.warn('Some notifications failed', failed);
 ```
 
@@ -194,10 +188,7 @@ describe('UserService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        UserService,
-        { provide: UserRepository, useValue: { findById: jest.fn() } },
-      ],
+      providers: [UserService, { provide: UserRepository, useValue: { findById: jest.fn() } }],
     }).compile();
 
     service = module.get(UserService);

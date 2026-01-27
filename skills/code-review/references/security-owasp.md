@@ -5,6 +5,7 @@ Security review based on OWASP Top 10 (2021) vulnerabilities.
 ## A01: Broken Access Control
 
 **Check for:**
+
 - [ ] Authorization on every endpoint
 - [ ] User can only access their own data
 - [ ] Admin functions protected
@@ -30,6 +31,7 @@ app.get('/api/users/:id', async (req, res) => {
 ## A02: Cryptographic Failures
 
 **Check for:**
+
 - [ ] No hardcoded secrets
 - [ ] Sensitive data encrypted at rest
 - [ ] HTTPS for data in transit
@@ -48,6 +50,7 @@ const hash = await bcrypt.hash(userPassword, 12);
 ## A03: Injection
 
 **Check for:**
+
 - [ ] Parameterized queries (no string concatenation)
 - [ ] Input validation/sanitization
 - [ ] ORM/query builder usage
@@ -63,6 +66,7 @@ const user = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
 ## A04: Insecure Design
 
 **Check for:**
+
 - [ ] Rate limiting on sensitive endpoints
 - [ ] Account lockout after failed attempts
 - [ ] Proper session management
@@ -71,6 +75,7 @@ const user = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
 ## A05: Security Misconfiguration
 
 **Check for:**
+
 - [ ] No debug mode in production
 - [ ] Security headers configured
 - [ ] Default credentials changed
@@ -79,6 +84,7 @@ const user = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
 ## A06: Vulnerable Components
 
 **Check for:**
+
 - [ ] Dependencies up to date
 - [ ] No known vulnerabilities (`npm audit`)
 - [ ] Minimal dependency footprint
@@ -86,6 +92,7 @@ const user = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
 ## A07: Authentication Failures
 
 **Check for:**
+
 - [ ] Strong password requirements
 - [ ] MFA where appropriate
 - [ ] Secure session tokens
@@ -94,6 +101,7 @@ const user = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
 ## A08: Data Integrity Failures
 
 **Check for:**
+
 - [ ] Signed/verified updates
 - [ ] Integrity checks on critical data
 - [ ] No unsafe deserialization
@@ -101,6 +109,7 @@ const user = await db.query('SELECT * FROM users WHERE id = $1', [userId]);
 ## A09: Logging & Monitoring
 
 **Check for:**
+
 - [ ] Security events logged
 - [ ] No sensitive data in logs
 - [ ] Alerting on suspicious activity
@@ -116,6 +125,7 @@ logger.info(`Login attempt for: ${email}`);
 ## A10: Server-Side Request Forgery (SSRF)
 
 **Check for:**
+
 - [ ] URL validation before fetching
 - [ ] Allowlist for external requests
 - [ ] No user-controlled URLs to internal services

@@ -33,8 +33,7 @@ describe('UserService', () => {
 
     it('should throw error with duplicate email', async () => {
       const userData = { email: 'existing@example.com', name: 'Test' };
-      await expect(userService.createUser(userData))
-        .rejects.toThrow('Email already exists');
+      await expect(userService.createUser(userData)).rejects.toThrow('Email already exists');
     });
   });
 });
@@ -80,10 +79,7 @@ describe('POST /api/users', () => {
   });
 
   it('should create user and return 201', async () => {
-    const response = await request(app)
-      .post('/api/users')
-      .send({ email: 'test@example.com', name: 'Test User' })
-      .expect(201);
+    const response = await request(app).post('/api/users').send({ email: 'test@example.com', name: 'Test User' }).expect(201);
 
     expect(response.body).toMatchObject({
       email: 'test@example.com',
@@ -104,10 +100,7 @@ import { GenericContainer } from 'testcontainers';
 let container;
 
 beforeAll(async () => {
-  container = await new GenericContainer('postgres:15')
-    .withEnvironment({ POSTGRES_PASSWORD: 'test' })
-    .withExposedPorts(5432)
-    .start();
+  container = await new GenericContainer('postgres:15').withEnvironment({ POSTGRES_PASSWORD: 'test' }).withExposedPorts(5432).start();
 
   const port = container.getMappedPort(5432);
   db = await createConnection({ host: 'localhost', port, password: 'test' });
@@ -178,6 +171,7 @@ export default function () {
 ```
 
 **Thresholds:**
+
 - Response time: p95 < 500ms, p99 < 1s
 - Throughput: 1000+ req/sec
 - Error rate: < 1%

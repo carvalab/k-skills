@@ -31,15 +31,18 @@ Extract coding standards and patterns. If none exist, apply general best practic
 ### 3. Apply Refinements
 
 **Preserve Functionality**
+
 - Never change what the code does, only how
 - Run existing tests to verify no regressions
 
 **Apply Project Standards**
+
 - Follow discovered conventions
 - Match existing code style
 - Respect established patterns
 
 **Enhance Clarity**
+
 - Reduce complexity and nesting
 - Eliminate redundant code
 - Use clear variable/function names
@@ -47,6 +50,7 @@ Extract coding standards and patterns. If none exist, apply general best practic
 - Choose clarity over brevity
 
 **Maintain Balance**
+
 - Don't create overly clever solutions
 - Don't combine too many concerns
 - Don't remove helpful abstractions
@@ -67,8 +71,8 @@ Extract coding standards and patterns. If none exist, apply general best practic
 
 ## References
 
-| Reference | Purpose |
-|-----------|---------|
-| `references/patterns.md` | Common simplification patterns |
-| `references/anti-patterns.md` | Code smells to refactor |
-| `references/examples.md` | Before/after examples |
+| Reference                     | Purpose                        |
+| ----------------------------- | ------------------------------ |
+| `references/patterns.md`      | Common simplification patterns |
+| `references/anti-patterns.md` | Code smells to refactor        |
+| `references/examples.md`      | Before/after examples          |

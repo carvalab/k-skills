@@ -32,22 +32,13 @@ const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle(pool);
 
 // CRUD operations
-const user = await db.insert(users)
-  .values({ email: 'test@example.com', name: 'Test' })
-  .returning();
+const user = await db.insert(users).values({ email: 'test@example.com', name: 'Test' }).returning();
 
-const found = await db.select()
-  .from(users)
-  .where(eq(users.email, email));
+const found = await db.select().from(users).where(eq(users.email, email));
 
-const usersWithPosts = await db.select()
-  .from(users)
-  .leftJoin(posts, eq(users.id, posts.authorId))
-  .where(ilike(users.email, '%@example.com'));
+const usersWithPosts = await db.select().from(users).leftJoin(posts, eq(users.id, posts.authorId)).where(ilike(users.email, '%@example.com'));
 
-await db.update(users)
-  .set({ name: 'Updated' })
-  .where(eq(users.id, userId));
+await db.update(users).set({ name: 'Updated' }).where(eq(users.id, userId));
 
 await db.delete(users).where(eq(users.id, userId));
 
@@ -96,10 +87,7 @@ const pool = new Pool({
 });
 
 // Parameterized query (safe)
-const result = await pool.query(
-  'SELECT * FROM users WHERE email = $1',
-  [email]
-);
+const result = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 ```
 
 ## Caching (Redis + Fallback)

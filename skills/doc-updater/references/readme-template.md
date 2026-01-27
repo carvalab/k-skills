@@ -12,17 +12,23 @@ Brief description of what the project does.
 ## Setup
 
 \`\`\`bash
+
 # Installation
+
 npm install
 
 # Environment variables
+
 cp .env.example .env.local
+
 # Fill in required values
 
 # Development
+
 npm run dev
 
 # Build
+
 npm run build
 \`\`\`
 
@@ -51,13 +57,17 @@ See [docs/CODEMAPS/INDEX.md](docs/CODEMAPS/INDEX.md) for detailed architecture.
 ## Development
 
 \`\`\`bash
+
 # Run tests
+
 npm test
 
 # Lint
+
 npm run lint
 
 # Type check
+
 npm run typecheck
 \`\`\`
 
@@ -73,21 +83,25 @@ MIT
 ## Section Guidelines
 
 ### Setup Section
+
 - List actual commands from package.json
 - Include all required environment variables
 - Note any system dependencies (Node version, etc.)
 
 ### Architecture Section
+
 - Link to codemaps, don't duplicate
 - List key directories with one-line descriptions
 - Keep concise - details belong in codemaps
 
 ### Features Section
+
 - List user-facing features
 - Use consistent formatting
 - Link to relevant docs/guides
 
 ### Development Section
+
 - Include all common dev commands
 - Match package.json scripts exactly
 - Note any gotchas or prerequisites

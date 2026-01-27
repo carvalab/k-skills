@@ -35,7 +35,7 @@ export class UsersController {
 export class UsersService {
   constructor(
     @InjectRepository(User)
-    private usersRepo: Repository<User>,
+    private usersRepo: Repository<User>
   ) {}
 
   async findOne(id: string): Promise<User> {

@@ -46,29 +46,29 @@ include:
 
 ## Pipeline Stages
 
-| Stage | Jobs | Runs On |
-|-------|------|---------|
-| **dependencies** | npm install (Node only) | MRs, Tags, Main |
-| **test** | lint, test, secrets-scanner, dockerfile-scanner | MRs, Tags |
-| **build-snapshot** | build_container_image_snapshot_{amd64,arm64} | MRs |
-| **publish-snapshot** | publish_container_image_snapshot | MRs |
-| **integration-tests** | integration-tests (if enabled) | MRs |
-| **build-release** | build_container_image_release_{amd64,arm64} | Tags, Main |
-| **publish-release** | publish_container_image_release | Tags, Main |
-| **publish-docs** | publish-techdocs | Main |
+| Stage                 | Jobs                                            | Runs On         |
+| --------------------- | ----------------------------------------------- | --------------- |
+| **dependencies**      | npm install (Node only)                         | MRs, Tags, Main |
+| **test**              | lint, test, secrets-scanner, dockerfile-scanner | MRs, Tags       |
+| **build-snapshot**    | build*container_image_snapshot*{amd64,arm64}    | MRs             |
+| **publish-snapshot**  | publish_container_image_snapshot                | MRs             |
+| **integration-tests** | integration-tests (if enabled)                  | MRs             |
+| **build-release**     | build*container_image_release*{amd64,arm64}     | Tags, Main      |
+| **publish-release**   | publish_container_image_release                 | Tags, Main      |
+| **publish-docs**      | publish-techdocs                                | Main            |
 
 ## Test Stage Jobs
 
-| Job | Languages | Purpose |
-|-----|-----------|---------|
-| `lint_kavak_yaml_files` | All | Lint `.kavak/` YAML files |
-| `auth_validate_config_{env}` | All | Validate `.kavak/auth/auth.{env}.yaml` |
-| `secrets-scanner` | All | Scan for leaked secrets |
-| `dockerfile-scanner` | All | Scan Dockerfile vulnerabilities |
-| `validate_openapi_spec` | All | Validate `.kavak/openapi.yaml` |
-| `test` | All except Python | Run unit tests |
-| `lint` | Go only | `go mod tidy` check |
-| `coverage_report` | All except Python | Push coverage to metrics API |
+| Job                          | Languages         | Purpose                                |
+| ---------------------------- | ----------------- | -------------------------------------- |
+| `lint_kavak_yaml_files`      | All               | Lint `.kavak/` YAML files              |
+| `auth_validate_config_{env}` | All               | Validate `.kavak/auth/auth.{env}.yaml` |
+| `secrets-scanner`            | All               | Scan for leaked secrets                |
+| `dockerfile-scanner`         | All               | Scan Dockerfile vulnerabilities        |
+| `validate_openapi_spec`      | All               | Validate `.kavak/openapi.yaml`         |
+| `test`                       | All except Python | Run unit tests                         |
+| `lint`                       | Go only           | `go mod tidy` check                    |
+| `coverage_report`            | All except Python | Push coverage to metrics API           |
 
 ## Integration Tests
 
@@ -93,14 +93,16 @@ integration_tests:
 ```
 
 **Required directories:**
+
 - `resources/mock/` - HTTP service mocks (create `.gitkeep` if empty)
 - `test/integration/` - `.hurl` test files
 
 **Debug services:**
+
 ```yaml
 integration_tests:
   variables:
-    CI_DEBUG_SERVICES: "true"  # Prints service logs to job output
+    CI_DEBUG_SERVICES: 'true' # Prints service logs to job output
 ```
 
 ## Multi-Architecture Support
@@ -144,6 +146,7 @@ RUN CGO_ENABLED=0 go build -o app ./cmd/server
 ```
 
 **Rules:**
+
 - Use multi-stage builds
 - Never use `COPY . .` (invalidates cache, includes `.git`)
 - Use `.dockerignore` to exclude files
@@ -155,12 +158,12 @@ Add CI/CD secrets via Vault. See [secrets documentation](https://developer-porta
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| **Image build slow** | Check `COPY . .` usage, follow best practices |
-| **Permission errors** | Check user ownership, `chown` before commands |
-| **Job killed** | OOM - add more memory to specific job |
-| **TLS internal error** | Known GitLab issue - retry the job |
+| Issue                  | Solution                                      |
+| ---------------------- | --------------------------------------------- |
+| **Image build slow**   | Check `COPY . .` usage, follow best practices |
+| **Permission errors**  | Check user ownership, `chown` before commands |
+| **Job killed**         | OOM - add more memory to specific job         |
+| **TLS internal error** | Known GitLab issue - retry the job            |
 
 ## Resources
 

@@ -5,17 +5,20 @@ Schedule and quality assurance for documentation.
 ## Maintenance Schedule
 
 ### Weekly
+
 - Check for new files in src/ not in codemaps
 - Verify README.md instructions work
 - Update package.json descriptions
 
 ### After Major Features
+
 - Regenerate all codemaps
 - Update architecture documentation
 - Refresh API reference
 - Update setup guides
 
 ### Before Releases
+
 - Comprehensive documentation audit
 - Verify all examples work
 - Check all external links
@@ -40,24 +43,29 @@ Before committing documentation:
 ## Docs: Update Codemaps and Documentation
 
 ### Summary
+
 Regenerated codemaps and updated documentation to reflect current codebase state.
 
 ### Changes
-- Updated docs/CODEMAPS/* from current code structure
+
+- Updated docs/CODEMAPS/\* from current code structure
 - Refreshed README.md with latest setup instructions
-- Updated docs/GUIDES/* with current API endpoints
+- Updated docs/GUIDES/\* with current API endpoints
 
 ### Generated Files
+
 - docs/CODEMAPS/INDEX.md
 - docs/CODEMAPS/frontend.md
 - docs/CODEMAPS/backend.md
 
 ### Verification
+
 - [x] All links in docs work
 - [x] Code examples are current
 - [x] Architecture diagrams match reality
 
 ### Impact
+
 LOW - Documentation only, no code changes
 ```
 
@@ -81,13 +89,16 @@ done
 ## Common Issues
 
 ### Stale File References
+
 - Run `git diff --name-status HEAD~10` to find renamed/deleted files
 - Update codemaps with new paths
 
 ### Outdated Dependencies
+
 - Compare `package.json` versions with docs
 - Update External Dependencies sections
 
 ### Broken Examples
+
 - Test all code snippets periodically
 - Use actual project imports, not hypotheticals

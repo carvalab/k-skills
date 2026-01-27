@@ -13,14 +13,14 @@ Code smells that indicate simplification opportunity.
 if (a) {
   if (b) {
     if (c) {
-      doSomething()
+      doSomething();
     }
   }
 }
 
 // Solution
-if (!a || !b || !c) return
-doSomething()
+if (!a || !b || !c) return;
+doSomething();
 ```
 
 ## Repeated Property Access
@@ -37,14 +37,14 @@ doSomething()
 
 ```typescript
 // Problem
-createUser(true, false, true)
+createUser(true, false, true);
 
 // Solution
 createUser({
   isAdmin: true,
   sendEmail: false,
-  verified: true
-})
+  verified: true,
+});
 ```
 
 ## Premature Abstraction
@@ -56,12 +56,12 @@ createUser({
 ```typescript
 // Problem
 function formatUserName(user) {
-  return `${user.first} ${user.last}`
+  return `${user.first} ${user.last}`;
 }
 // ... called only once
 
 // Solution
-const displayName = `${user.first} ${user.last}`
+const displayName = `${user.first} ${user.last}`;
 ```
 
 ## Dead Code
@@ -104,10 +104,10 @@ if (status === STATUS_COMPLETE) { ... }
 ```typescript
 // Problem
 // Increment counter by 1
-counter++
+counter++;
 
 // Solution: Just delete the comment
-counter++
+counter++;
 ```
 
 ## Over-Engineering

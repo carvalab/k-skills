@@ -34,11 +34,13 @@ git diff --name-only $BASE_SHA..$HEAD_SHA --diff-filter=ACMR
 ## When to Self-Review (Automated)
 
 **Mandatory triggers:**
+
 - After completing each task in multi-step development
 - After implementing a major feature
 - Before merging to main branch
 
 **Valuable triggers:**
+
 - When stuck (fresh perspective on own code)
 - Before refactoring (baseline check)
 - After fixing complex bugs
@@ -65,6 +67,7 @@ For each file in the list, skip any that produces no actual diff hunks.
 ### 2. Understand Intent & Requirements
 
 Before reviewing code, understand what it should do:
+
 - **Original task/issue**: What was requested?
 - **Product impact**: What does this deliver for users?
 - **Acceptance criteria**: What defines "done"?
@@ -78,6 +81,7 @@ For each changed file and each diff hunk, evaluate in context of the existing co
 **MANDATORY: Trace Complete Execution Before Flagging Critical/Major**
 
 Before classifying any issue as Critical or Major, you MUST:
+
 1. Read the complete code path - not just the suspicious line
 2. Trace what actually happens - follow execution from start to end
 3. Verify the issue exists - confirm there is no defensive code preventing it
@@ -85,23 +89,24 @@ Before classifying any issue as Critical or Major, you MUST:
 
 ### 4. Review Categories
 
-| Category | What to Check |
-|----------|---------------|
-| **Design & Architecture** | Fits system patterns, avoids coupling, clear separation |
-| **Complexity & Maintainability** | Flat control flow, low complexity, DRY, no dead code |
-| **Functionality & Correctness** | Valid/invalid inputs handled, edge cases covered |
-| **Readability & Naming** | Intent-revealing names, comments explain WHY |
-| **Best Practices** | Language/framework idioms, SOLID principles |
-| **Test Coverage** | Success + failure paths tested |
-| **Standardization** | Style guide conformance, zero new lint warnings |
-| **Security** | Input validation, secrets management, OWASP Top 10 |
-| **Performance** | No N+1 queries, efficient I/O, no memory leaks |
+| Category                         | What to Check                                           |
+| -------------------------------- | ------------------------------------------------------- |
+| **Design & Architecture**        | Fits system patterns, avoids coupling, clear separation |
+| **Complexity & Maintainability** | Flat control flow, low complexity, DRY, no dead code    |
+| **Functionality & Correctness**  | Valid/invalid inputs handled, edge cases covered        |
+| **Readability & Naming**         | Intent-revealing names, comments explain WHY            |
+| **Best Practices**               | Language/framework idioms, SOLID principles             |
+| **Test Coverage**                | Success + failure paths tested                          |
+| **Standardization**              | Style guide conformance, zero new lint warnings         |
+| **Security**                     | Input validation, secrets management, OWASP Top 10      |
+| **Performance**                  | No N+1 queries, efficient I/O, no memory leaks          |
 
 **Automation tip**: Delegate style/formatting to linters (ESLint, Prettier). Focus human review on logic, architecture, and edge cases.
 
 ### 5. Check Project Rules
 
 **MANDATORY**: Check and enforce rules from:
+
 - `.claude/CLAUDE.md` or `CLAUDE.md` (root)
 - `.cursor/rules/` folder
 - `AGENTS.md`
@@ -110,11 +115,13 @@ Before classifying any issue as Critical or Major, you MUST:
 ### 6. Report & Fix Issues
 
 For each validated issue:
+
 - **File**: `<path>:<line-range>`
 - **Issue**: One-line summary
 - **Fix**: Concise suggested change
 
 **Severity levels:**
+
 - **Critical (P0)**: Security vulnerabilities, data loss, crashes
 - **Major (P1)**: Significant bugs, performance issues, architectural violations
 - **Minor (P2)**: Code style, minor improvements
@@ -141,20 +148,24 @@ Provide structured output:
 
 ```markdown
 ### Strengths
+
 [What's well done - be specific with file:line references]
 
 ### Issues Found & Fixed
+
 - **Critical**: [count] - [brief list]
 - **Major**: [count] - [brief list]
 - **Minor**: [count] - [brief list]
 
 ### Quality Gates
+
 - Lint: ✓/✗
 - Typecheck: ✓/✗
 - Build: ✓/✗
 - Tests: ✓/✗
 
 ### Assessment
+
 **Ready to proceed?** [Yes / Yes with notes / No - needs fixes]
 **Reasoning:** [1-2 sentence technical assessment]
 ```
@@ -163,14 +174,14 @@ If no issues: "Code review complete. No issues found. All quality gates pass. Re
 
 ## References
 
-| Reference | Purpose |
-|-----------|---------|
-| `references/checklist.md` | Detailed review checklist |
-| `references/severity-guide.md` | How to classify issue severity |
-| `references/common-issues.md` | Common issues (TypeScript/Node) |
-| `references/common-issues-go.md` | Common issues (Go) |
-| `references/security-owasp.md` | OWASP Top 10 security checklist |
-| `references/feedback-guide.md` | How to give constructive feedback |
+| Reference                            | Purpose                                  |
+| ------------------------------------ | ---------------------------------------- |
+| `references/checklist.md`            | Detailed review checklist                |
+| `references/severity-guide.md`       | How to classify issue severity           |
+| `references/common-issues.md`        | Common issues (TypeScript/Node)          |
+| `references/common-issues-go.md`     | Common issues (Go)                       |
+| `references/security-owasp.md`       | OWASP Top 10 security checklist          |
+| `references/feedback-guide.md`       | How to give constructive feedback        |
 | `references/self-review-workflow.md` | Automated self-review during development |
 
 ## Best Practices

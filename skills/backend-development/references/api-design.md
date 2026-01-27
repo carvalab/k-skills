@@ -17,6 +17,7 @@ GET    /api/v1/users/:id/posts    # Get user's posts
 ```
 
 **Avoid:**
+
 ```
 GET /api/v1/getUser?id=123        # RPC-style
 POST /api/v1/createUser           # Verb in URL
@@ -25,11 +26,13 @@ POST /api/v1/createUser           # Verb in URL
 ### HTTP Status Codes
 
 **Success:**
+
 - `200 OK` - GET, PUT, PATCH success
 - `201 Created` - POST success
 - `204 No Content` - DELETE success
 
 **Client Errors:**
+
 - `400 Bad Request` - Invalid input
 - `401 Unauthorized` - Missing/invalid auth
 - `403 Forbidden` - Authenticated but not authorized
@@ -39,12 +42,14 @@ POST /api/v1/createUser           # Verb in URL
 - `429 Too Many Requests` - Rate limited
 
 **Server Errors:**
+
 - `500 Internal Server Error` - Generic
 - `503 Service Unavailable` - Temporary downtime
 
 ### Request/Response Format
 
 **Request:**
+
 ```json
 POST /api/v1/users
 Content-Type: application/json
@@ -56,6 +61,7 @@ Content-Type: application/json
 ```
 
 **Success Response:**
+
 ```json
 HTTP/1.1 201 Created
 Location: /api/v1/users/123
@@ -69,6 +75,7 @@ Location: /api/v1/users/123
 ```
 
 **Error Response:**
+
 ```json
 HTTP/1.1 400 Bad Request
 
@@ -121,12 +128,14 @@ GET /api/v1/users?status=active&role=admin&sort=-createdAt,name&limit=20
 ### API Versioning
 
 **URL Versioning (Recommended):**
+
 ```
 /api/v1/users
 /api/v2/users
 ```
 
 **Header Versioning:**
+
 ```
 GET /api/users
 Accept: application/vnd.myapi.v2+json
@@ -142,10 +151,7 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  async findAll(
-    @Query('page') page = 1,
-    @Query('limit') limit = 50,
-  ) {
+  async findAll(@Query('page') page = 1, @Query('limit') limit = 50) {
     return this.usersService.findAll({ page, limit });
   }
 

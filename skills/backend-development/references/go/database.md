@@ -12,16 +12,16 @@ go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
 ```yaml
 # sqlc.yaml
-version: "2"
+version: '2'
 sql:
-  - engine: "postgresql"
-    queries: "db/queries/"
-    schema: "db/migrations/"
+  - engine: 'postgresql'
+    queries: 'db/queries/'
+    schema: 'db/migrations/'
     gen:
       go:
-        package: "db"
-        out: "internal/db"
-        sql_package: "pgx/v5"
+        package: 'db'
+        out: 'internal/db'
+        sql_package: 'pgx/v5'
         emit_json_tags: true
         emit_prepared_queries: true
 ```

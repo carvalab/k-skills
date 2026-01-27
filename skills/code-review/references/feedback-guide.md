@@ -7,11 +7,13 @@ How to give effective code review feedback that helps, not hurts.
 ### 1. Feedback is a Gift, Not a Critique
 
 **Focus on:**
+
 - The code, not the person
 - Learning opportunities
 - Improving the codebase together
 
 **Avoid:**
+
 - "You should have..."
 - "Why didn't you..."
 - "This is wrong"
@@ -20,9 +22,11 @@ How to give effective code review feedback that helps, not hurts.
 
 ```markdown
 # Bad - Assumes incompetence
+
 "This doesn't handle null values"
 
 # Good - Asks for clarification
+
 "What happens if `user` is null here? I might be missing context."
 ```
 
@@ -30,9 +34,11 @@ How to give effective code review feedback that helps, not hurts.
 
 ```markdown
 # Bad - Just says what to do
+
 "Use early returns here"
 
 # Good - Explains why
+
 "Consider early returns here - it would reduce nesting from 4 levels to 1, making the happy path clearer."
 ```
 
@@ -81,9 +87,11 @@ Example:
 
 ```markdown
 # Bad
+
 "CRITICAL BUG: You're exposing user passwords!"
 
 # Good
+
 "🔴 Security concern: The password field is included in the API response.
 This should be excluded before sending to the client.
 Happy to help fix this - want me to suggest a change?"
@@ -93,9 +101,11 @@ Happy to help fix this - want me to suggest a change?"
 
 ```markdown
 # Bad
+
 "This will cause N+1 queries and kill performance"
 
 # Good
+
 "Performance note: This queries the database inside the loop,
 which could be slow with many users. Consider batching:
 `const posts = await getPosts(userIds)`
@@ -107,9 +117,11 @@ Let me know if you'd like to discuss alternatives."
 
 ```markdown
 # Bad
+
 "Wrong naming convention"
 
 # Good
+
 "Nit: Our convention is camelCase for functions (`getUserData` vs `get_user_data`).
 Not blocking, but worth updating for consistency."
 ```
@@ -118,9 +130,11 @@ Not blocking, but worth updating for consistency."
 
 ```markdown
 # Bad
+
 "You should refactor this"
 
 # Good
+
 "Future idea: This could be simplified with the new `useQuery` hook
 we added last sprint. Not urgent - just flagging for when you're
 in this area again."
@@ -140,6 +154,7 @@ Don't just point out problems. Highlight good work:
 ## When to Talk Instead
 
 **Use synchronous discussion when:**
+
 - Multiple back-and-forth comments
 - Architectural disagreement
 - Explaining complex context
@@ -153,17 +168,18 @@ your constraints first."
 
 ## Avoid These Anti-Patterns
 
-| Anti-Pattern | Better Approach |
-|--------------|-----------------|
-| "LGTM" with no context | "LGTM - the error handling is solid" |
+| Anti-Pattern                  | Better Approach                          |
+| ----------------------------- | ---------------------------------------- |
+| "LGTM" with no context        | "LGTM - the error handling is solid"     |
 | Nitpicking style in large PRs | Focus on logic, let linters handle style |
-| Blocking on preferences | "I'd do it differently, but this works" |
-| Delayed reviews | Review within 24 hours |
-| Review bombing | Limit to 5-7 actionable comments |
+| Blocking on preferences       | "I'd do it differently, but this works"  |
+| Delayed reviews               | Review within 24 hours                   |
+| Review bombing                | Limit to 5-7 actionable comments         |
 
 ## The Golden Rule
 
 Before posting a comment, ask:
+
 > "If I received this feedback, would I feel helped or attacked?"
 
 If attacked → rewrite with empathy.

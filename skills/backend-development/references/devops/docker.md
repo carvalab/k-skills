@@ -55,7 +55,7 @@ services:
   api:
     build: .
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - DATABASE_URL=postgresql://postgres:password@db:5432/myapp
       - REDIS_URL=redis://redis:6379
@@ -71,12 +71,12 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - '5432:5432'
 
   redis:
     image: redis:7-alpine
     ports:
-      - "6379:6379"
+      - '6379:6379'
 
 volumes:
   postgres-data:
@@ -119,6 +119,7 @@ async function checkDatabase(): Promise<boolean> {
 ## DataDog Metrics
 
 **Go (dogstatsd):**
+
 ```go
 import "github.com/DataDog/datadog-go/v5/statsd"
 
@@ -137,6 +138,7 @@ client.Incr("api.request", []string{
 ```
 
 **Node.js (hot-shots):**
+
 ```typescript
 import StatsD from 'hot-shots';
 
@@ -169,6 +171,7 @@ logger.Info("user logged in", zap.String("user_id", "123"))
 ## Distributed Tracing (DataDog)
 
 **Node.js:**
+
 ```typescript
 // Initialize BEFORE other imports
 import tracer from 'dd-trace';
@@ -176,6 +179,7 @@ tracer.init({ service: 'my-api', env: process.env.KAVAK_ENVIRONMENT });
 ```
 
 **Go:**
+
 ```go
 import "github.com/DataDog/dd-trace-go/v2/ddtrace/tracer"
 
