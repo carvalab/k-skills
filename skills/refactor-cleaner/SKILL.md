@@ -9,6 +9,10 @@ model: opus
 
 Identify and remove dead code, duplicates, and unused exports to keep the codebase lean and maintainable. Safety-first approach with comprehensive documentation.
 
+> **Related Skills:**
+> - `kavak-documentation` - Query for Kavak-specific patterns that might look like dead code but are used dynamically
+> - Use `kavak-platform/plati_query` MCP tool to verify before removing Kavak SDK/platform code
+
 ## Quick Start
 
 Detect project type and run appropriate analysis:

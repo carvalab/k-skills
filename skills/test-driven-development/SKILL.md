@@ -9,6 +9,10 @@ model: opus
 
 Write tests before code. The test is the specification. If you can't write a test, you don't understand the requirement.
 
+> **Related Skills:**
+> - `kavak-documentation` - Query for Kavak-specific testing patterns, kbroker event testing, STS mocking
+> - Use `kavak-platform/plati_query` MCP tool for testing best practices at Kavak
+
 ## Quick Start
 
 ```bash

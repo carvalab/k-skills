@@ -9,6 +9,10 @@ model: opus
 
 Perform a thorough senior-level code review on recent changes. Focus human review on complex logic, architecture, and edge cases. Delegate style enforcement to automated tools.
 
+> **Related Skills:**
+> - `kavak-documentation` - Query for Kavak-specific patterns, logging/metrics standards, GitLab CI templates
+> - Use `kavak-platform/plati_query` MCP tool to verify Kavak best practices when reviewing
+
 ## Quick Start
 
 ```bash
@@ -100,8 +104,31 @@ Before classifying any issue as Critical or Major, you MUST:
 | **Standardization**              | Style guide conformance, zero new lint warnings         |
 | **Security**                     | Input validation, secrets management, OWASP Top 10      |
 | **Performance**                  | No N+1 queries, efficient I/O, no memory leaks          |
+| **Logging**                      | State machine pattern, proper tense, actionable context |
+| **Metrics**                      | No cardinality explosions, proper naming, documented    |
 
 **Automation tip**: Delegate style/formatting to linters (ESLint, Prettier). Focus human review on logic, architecture, and edge cases.
+
+### 4.1 Logging Review
+
+| Check | ✓ Good | ✗ Bad |
+|-------|--------|-------|
+| Length | 50-200 chars | >200 (truncation) |
+| Multiline | Single line | Multiple lines |
+| Start | "Syncing orders" (progressive) | "Sync orders" |
+| End OK | "Orders synced" (past) | "Syncing complete" |
+| End Fail | "Failed to sync orders" | "Error" |
+| Context | "DB timeout after 30s" | "Database error" |
+
+### 4.2 Metrics Review
+
+| Check | ✓ Good | ✗ Bad (CRITICAL) |
+|-------|--------|------------------|
+| Labels | `status=2xx`, `method=GET` | `user_id`, `order_id` |
+| Naming | `api.request.total` | `apiRequestTotal` |
+| Type | Counter (events), Histogram (latency) | Gauge for everything |
+
+**CRITICAL**: High-cardinality labels (user_id, request_id, timestamp) cause monitoring system crashes.
 
 ### 5. Check Project Rules
 

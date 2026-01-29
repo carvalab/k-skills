@@ -9,6 +9,10 @@ model: opus
 
 Maintain accurate, up-to-date documentation that reflects actual code state. Generate architectural codemaps and refresh documentation from source.
 
+> **Related Skills:**
+> - `kavak-documentation` - Query for Kavak documentation standards, README templates, architecture docs format
+> - Use `kavak-platform/plati_query` MCP tool for Kavak-specific documentation patterns
+
 ## Quick Start
 
 Detect project type and use appropriate tools:

@@ -10,11 +10,14 @@ model: opus
 Next.js (latest) App Router with TypeScript. Server-first architecture.
 
 > **Related Skills**:
+> - `kavak-documentation` - **USE FIRST** for Kavak-specific patterns, GitLab CI, Docker templates
 > - `vercel-react-best-practices` - **USE THIS** for performance (bundle size, waterfalls, caching, re-renders, memoization)
 > - Check `.claude/CLAUDE.md` for project-specific conventions
 > - Check `.cursor/rules/*` for project-specific conventions
 >
-> **MCP**: Use `next-devtools` MCP server if available for debugging, route inspection, and build analysis.
+> **MCP**: 
+> - Use `kavak-platform/plati_query` tool to query Kavak internal documentation before implementing
+> - Use `next-devtools` MCP server if available for debugging, route inspection, and build analysis
 
 ## Quick Start
 

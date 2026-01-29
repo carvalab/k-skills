@@ -9,6 +9,10 @@ model: opus
 
 Enhance code clarity, consistency, and maintainability while preserving exact functionality. Apply project-specific best practices without altering behavior. Prioritize readable, explicit code over compact solutions.
 
+> **Related Skills:**
+> - `kavak-documentation` - Query for Kavak coding standards and patterns before simplifying
+> - Use `kavak-platform/plati_query` MCP tool to verify Kavak-specific idioms
+
 ## Workflow
 
 ### 1. Discover Project Standards

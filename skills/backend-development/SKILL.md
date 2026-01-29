@@ -11,8 +11,11 @@ Node.js/TypeScript and Go. PostgreSQL, Redis. REST APIs.
 
 > **Related Skills:**
 >
+> - `kavak-documentation` - **USE FIRST** for Kavak-specific patterns, kbroker, STS, GitLab CI, Docker templates
 > - `test-driven-development` - **USE PROACTIVELY** for new features and bug fixes (Red-Green-Refactor)
 > - Check `.claude/CLAUDE.md` or `.cursor/rules/*` for project-specific conventions
+>
+> **MCP**: Use `kavak-platform/plati_query` tool to query Kavak internal documentation before implementing.
 
 ## Core Principles
 
