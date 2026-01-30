@@ -17,51 +17,98 @@ Node.js/TypeScript and Go. PostgreSQL, Redis. REST APIs.
 >
 > **MCP**: Use `kavak-platform/plati_query` tool to query Kavak internal documentation before implementing.
 
-## ⚠️ MANDATORY: Pre-Implementation Exploration
+## 🔴 MANDATORY: Code Reuse Analysis (GATE)
 
-**Before writing ANY code, you MUST complete these exploration steps:**
+**This is a GATE. You cannot write new code until you complete this analysis.**
 
-### Step 1: Find Existing Similar Code (DRY Detection)
+### Why This Matters
 
-Search for code that already does something similar to what you need:
+AI-generated code often duplicates existing logic because the model doesn't "see" all relevant files. This creates:
+- Bugs that need fixing in multiple places
+- Inconsistent behavior across the codebase
+- Maintenance nightmare for humans
+
+**Your job: Find existing code FIRST, reuse it, extend it, or extract shared logic.**
+
+### Step 1: Search Comprehensively
+
+**STOP and think:** Before searching, extract keywords from YOUR task:
+1. **VERBS** - What actions? (create, save, send, process, calculate, update, delete, etc.)
+2. **NOUNS** - What domain concepts? (the entities mentioned in your task)
+3. **OUTPUT** - What type of result? (Model, Response, Event, etc.)
+
+**Then search using YOUR task's actual keywords:**
 
 ```bash
-# Search for similar function/method names
-grep -r "Map.*ToEvent\|Send.*Event\|Create.*Quotation" --include="*.go" --include="*.ts" .
+# Search pattern - replace KEYWORD with your actual task keywords:
+grep -rn "KEYWORD" --include="*.go" --include="*.ts" . | head -50
 
-# Search for similar struct/interface usage
-grep -r "GrowthPulseInput\|EventContent\|QuotationSimulation" --include="*.go" --include="*.ts" .
+# Search for existing services/usecases with your domain term:
+grep -rn "func.*KEYWORD\|KEYWORD.*Service\|KEYWORD.*Repository" --include="*.go" . | head -30
 
-# Search for similar domain concepts
-grep -r "quotation\|simulation\|event.*tracker" --include="*.go" --include="*.ts" . | head -30
+# Use codebase_search for semantic search:
+codebase_search "how does existing code [your task action]"
+codebase_search "where is [your domain concept] implemented"
 ```
 
-### Step 2: Analyze Found Code for Reuse
+**The goal:** Find ANY existing code that does something similar to what your task needs.
 
-For each similar file found, ask:
+### Step 2: Read and Evaluate Found Code
 
-- **Can I extend this?** (add a method, add a parameter)
-- **Can I extract common logic?** (create shared helper)
-- **Is >50% of my logic already implemented?** → MUST refactor to reuse
+For EACH potentially relevant file, read it and answer:
 
-### Step 3: YAGNI Check
+| Question | If YES... |
+|----------|-----------|
+| Does this do exactly what I need? | **Call it directly** - inject as dependency |
+| Does this do 70%+ of what I need? | **Extend it** - add method/parameter |
+| Does this share 50%+ logic with what I need? | **Extract shared helper first** |
+| Is this only 30% similar? | OK to create new, but document why |
 
-Before creating anything new:
+### Step 3: Document Your Decision (MANDATORY - Must Output This)
 
-- [ ] Does an existing abstraction cover this case with minor extension?
-- [ ] Can I add a method to an existing interface instead of a new file?
-- [ ] Is the new code >50% similar to existing code? → **STOP and refactor**
-
-### Step 4: Document Reuse Decision
-
-Before implementing, note:
+**Before writing ANY code, you MUST output this analysis in your response:**
 
 ```
-// Reuse analysis:
-// - Found: mapper.go has MapModelsToEvent (80% similar logic)
-// - Decision: Extract shared calculateOfferDifferences() helper
-// - New code: ~50 lines (not 300+ duplicated lines)
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ REUSE ANALYSIS                                                  ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Task: [brief description of what you need to implement]         ┃
+┃                                                                 ┃
+┃ Keywords searched:                                              ┃
+┃   - Verbs: [actual verbs you searched]                          ┃
+┃   - Nouns: [actual domain terms you searched]                   ┃
+┃                                                                 ┃
+┃ Existing code found:                                            ┃
+┃   1. [file:line] - [function name] - [what it does]             ┃
+┃   2. [file:line] - [function name] - [what it does]             ┃
+┃                                                                 ┃
+┃ Similarity assessment:                                          ┃
+┃   - [file1]: [X]% similar because [reason]                      ┃
+┃                                                                 ┃
+┃ Decision: [REUSE | EXTEND | EXTRACT | NEW]                      ┃
+┃ Rationale: [1-2 sentences why]                                  ┃
+┃ Action: [specific action - e.g., "inject existing service"]     ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
+
+**If you skip this analysis or create code without it, the task FAILS.**
+
+### Step 4: Apply Decision Matrix
+
+| Similarity | Action | Example |
+|------------|--------|---------|
+| **>70%** | **REUSE directly** | Inject existing service as dependency, call its method |
+| **50-70%** | **EXTRACT shared helper** | Create helper function, refactor existing + use in new |
+| **30-50%** | **Consider interface** | Create interface both can implement |
+| **<30%** | **OK to create new** | Document why existing code doesn't fit |
+
+### 🔴 Failure Conditions
+
+Your implementation FAILS the Code Reuse Analysis if:
+- [ ] You create a new file >100 lines without documenting reuse analysis
+- [ ] You duplicate >50% of logic from an existing file
+- [ ] You copy-paste code instead of calling existing functions
+- [ ] You create a new method that does the same thing as an existing one
 
 ---
 
@@ -157,29 +204,21 @@ Existing project uses callbacks? → Use callbacks (unless migrating)
 
 > **CRITICAL: When task says "do X like Y" or "add similar to existing"**
 
-1. **Find existing implementation** → `references/dry-detection.md`
-   ```bash
-   grep -rn "similar_feature\|related_domain" --include="*.go" --include="*.ts" .
-   ```
+1. **Find existing implementation first** - search for the feature mentioned in the task
 2. **Analyze similarity** → Is >50% of logic the same?
-3. **If similar, refactor FIRST:**
-   - Extract shared calculation/mapping helpers
-   - Create interface if multiple sources need same processing
-   - Only THEN add new entry point
-4. **Implement thin adapter** → New code should be <50 lines
+3. **If similar, REUSE or EXTRACT:**
+   - **>70% similar**: Inject existing service, call its method
+   - **50-70% similar**: Extract shared helper, refactor existing to use it
+   - **<50% similar**: OK to create new, but keep it small
+4. **New code should be <50 lines** - if more, you probably missed reuse opportunity
 5. **Test both old and new paths** → Ensure refactoring didn't break existing
 
-**Example:**
+**WRONG vs RIGHT:**
 
-```
-Task: "Send event to API from quotation endpoint (like cronjob does)"
-
-❌ WRONG: Copy 300 lines from cronjob mapper to new quotation mapper
-✅ RIGHT:
-  1. Extract shared calculateOfferDifferences() helper
-  2. Create EventSource interface
-  3. Add 20-line adapter for quotation flow
-```
+| Approach | Result |
+|----------|--------|
+| ❌ WRONG | Create new file (50-100+ lines) that duplicates existing logic |
+| ✅ RIGHT | Inject existing service, call its method (5-10 lines) |
 
 ### Fix Slow Query
 

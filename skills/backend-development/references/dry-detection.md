@@ -2,23 +2,32 @@
 
 **MANDATORY: Read this before creating new files or functions.**
 
-## The Problem
+## The Core Problem
 
-Code duplication is the #1 maintainability killer. When you copy-paste logic:
+> "Duplication is the root of all evil in software." — The Pragmatic Programmer
 
-- Bugs need fixing in multiple places
-- Changes require updating N files
-- Behavior diverges over time
-- Test coverage multiplies
+DRY is NOT about avoiding copy-paste. DRY means: **Every piece of KNOWLEDGE has ONE authoritative source.**
 
-## Pre-Implementation Checklist
+When AI generates code, it often can't "see" all relevant files, leading to accidental duplication. Your job is to be the bridge - find existing code and ensure reuse.
 
-**Before writing ANY new code:**
+## The Cost of Duplication
 
-- [ ] Searched for similar function names?
-- [ ] Searched for similar domain concepts?
-- [ ] Found existing code? → Analyzed for reuse?
-- [ ] >50% similar to existing? → **STOP - must refactor**
+| Problem | Impact |
+|---------|--------|
+| Same logic in 2+ places | Bug fix needed in N places |
+| Copied calculations | Results diverge over time |
+| Duplicated business rules | Inconsistent behavior |
+| Similar mappers/transformers | Maintenance nightmare |
+
+## 🔴 Pre-Implementation GATE (Cannot Skip)
+
+**Before writing ANY new code, complete this checklist:**
+
+- [ ] Ran comprehensive search (verbs, nouns, types)?
+- [ ] Read ALL potentially relevant files found?
+- [ ] Documented reuse analysis with similarity %?
+- [ ] Applied decision matrix (REUSE/EXTEND/EXTRACT/NEW)?
+- [ ] If >50% similar found → refactoring plan created?
 
 ## How to Detect Hidden Duplication
 

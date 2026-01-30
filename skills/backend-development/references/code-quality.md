@@ -285,51 +285,86 @@ function validateEmail(email: string) {
 }
 ```
 
-#### Pre-Implementation DRY Check (MANDATORY)
+#### Pre-Implementation DRY Check (MANDATORY GATE)
 
-Before creating new code, search for similar implementations:
+**You cannot write new code until you complete this analysis.**
 
+Extract keywords from your task, then search:
 ```bash
-# Search for similar function names
-grep -rn "Map.*To.*Event\|Calculate.*Diff" --include="*.ts" --include="*.go" .
+# Search by VERBS from your task (what actions you need)
+grep -rn "<verb1>.*\|<verb2>.*" --include="*.ts" --include="*.go" . | head -50
 
-# Search for similar domain concepts
-grep -rn "quotation\|simulation\|pricing" --include="*.ts" --include="*.go" . | head -30
+# Search by NOUNS from your task (domain concepts)
+grep -rn "<noun1>\|<noun2>\|<noun3>" --include="*.ts" --include="*.go" . | head -50
+
+# Search by types/interfaces you need
+grep -rn "type.*<TypeName>\|interface.*<Name>" --include="*.ts" --include="*.go" . | head -30
+
+# Semantic search
+codebase_search "how does existing code <do what your task needs>"
 ```
 
 **DRY Decision Matrix:**
 
-| Similarity | Action                                  |
-| ---------- | --------------------------------------- |
-| <30%       | Proceed with new code                   |
-| 30-50%     | Consider extracting common parts        |
-| >50%       | **MUST refactor** - do not duplicate    |
+| Similarity | Action | What To Do |
+| ---------- | ------ | ---------- |
+| **>70%** | **REUSE** | Inject existing service, call its method directly |
+| **50-70%** | **EXTRACT** | Create shared helper, refactor existing to use it |
+| **30-50%** | **CONSIDER** | Maybe create interface both implement |
+| **<30%** | **NEW OK** | Document why existing doesn't fit |
 
-#### Signs of Hidden Duplication
+#### Common Reuse Patterns
 
-| Red Flag                         | Solution                         |
-| -------------------------------- | -------------------------------- |
-| "Similar to X but for Y"         | Extract shared helper            |
-| Same calculations in 2+ places   | Create calculation function      |
-| Same struct fields copied        | Use composition                  |
-| New file looks like existing     | **STOP** - extend existing       |
+**Pattern 1: Inject and Call (>70% similar)**
+```go
+// ❌ WRONG: Copy existing function to new location
+func (u *newUsecases) existingLogic(...) { /* N lines copied */ }
 
-```typescript
-// ❌ BAD: 300-line file that duplicates existing logic
-function mapModelAToEvent(a: ModelA): Event {
-  // 250 lines of calculations (same as existing mapModelBToEvent)
+// ✅ RIGHT: Inject existing service, call its method
+type newUsecases struct {
+    existingService existing.Service  // inject existing
 }
 
-// ✅ GOOD: Extract shared logic
-function calculateOfferDifferences(prev: Offers, curr: Offers): Differences {
-  // Calculations in ONE place
-}
-
-function mapModelAToEvent(a: ModelA): Event {
-  const diffs = calculateOfferDifferences(extractOffers(a));
-  return buildEvent(a.userId, diffs);
+func (u *newUsecases) doSomething(ctx context.Context) {
+    result, _ := u.existingService.ExistingMethod(ctx, input)  // reuse!
 }
 ```
+
+**Pattern 2: Extract Shared Helper (50-70% similar)**
+```go
+// ❌ WRONG: Two functions with same calculation logic
+func ProcessTypeA(a *TypeA) *Result { /* 100 lines */ }
+func ProcessTypeB(b *TypeB) *Result { /* same 100 lines */ }
+
+// ✅ RIGHT: Extract shared, thin adapters
+func sharedCalculation(data *CommonData) *Result { /* ONE place */ }
+
+func ProcessTypeA(a *TypeA) *Result {
+    return sharedCalculation(a.ToCommonData())  // 5 lines
+}
+```
+
+**Pattern 3: Interface Adapter (multiple sources, same processing)**
+```go
+// ❌ WRONG: Separate functions for each type
+func ProcessA(a *TypeA) { /* 50 lines */ }
+func ProcessB(b *TypeB) { /* same 50 lines */ }
+
+// ✅ RIGHT: Interface + single implementation
+type Processable interface {
+    GetID() string
+    GetData() []Data
+}
+
+func Process(p Processable) { /* 50 lines, ONCE */ }
+```
+
+#### Self-Check Before Committing
+
+- [ ] Did I complete the Code Reuse Analysis?
+- [ ] Is my new file <100 lines? If larger, did I check for duplication?
+- [ ] Would a business logic change need edits in 2+ places? If yes, extract.
+- [ ] Did I inject existing services instead of recreating their logic?
 
 ### YAGNI (You Aren't Gonna Need It)
 
