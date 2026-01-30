@@ -17,6 +17,54 @@ Node.js/TypeScript and Go. PostgreSQL, Redis. REST APIs.
 >
 > **MCP**: Use `kavak-platform/plati_query` tool to query Kavak internal documentation before implementing.
 
+## ⚠️ MANDATORY: Pre-Implementation Exploration
+
+**Before writing ANY code, you MUST complete these exploration steps:**
+
+### Step 1: Find Existing Similar Code (DRY Detection)
+
+Search for code that already does something similar to what you need:
+
+```bash
+# Search for similar function/method names
+grep -r "Map.*ToEvent\|Send.*Event\|Create.*Quotation" --include="*.go" --include="*.ts" .
+
+# Search for similar struct/interface usage
+grep -r "GrowthPulseInput\|EventContent\|QuotationSimulation" --include="*.go" --include="*.ts" .
+
+# Search for similar domain concepts
+grep -r "quotation\|simulation\|event.*tracker" --include="*.go" --include="*.ts" . | head -30
+```
+
+### Step 2: Analyze Found Code for Reuse
+
+For each similar file found, ask:
+
+- **Can I extend this?** (add a method, add a parameter)
+- **Can I extract common logic?** (create shared helper)
+- **Is >50% of my logic already implemented?** → MUST refactor to reuse
+
+### Step 3: YAGNI Check
+
+Before creating anything new:
+
+- [ ] Does an existing abstraction cover this case with minor extension?
+- [ ] Can I add a method to an existing interface instead of a new file?
+- [ ] Is the new code >50% similar to existing code? → **STOP and refactor**
+
+### Step 4: Document Reuse Decision
+
+Before implementing, note:
+
+```
+// Reuse analysis:
+// - Found: mapper.go has MapModelsToEvent (80% similar logic)
+// - Decision: Extract shared calculateOfferDifferences() helper
+// - New code: ~50 lines (not 300+ duplicated lines)
+```
+
+---
+
 ## Core Principles
 
 **Architecture:** Clean Architecture (4-layer) for new projects → `references/architecture.md`
@@ -24,7 +72,7 @@ Node.js/TypeScript and Go. PostgreSQL, Redis. REST APIs.
 **Design Principles:**
 
 - **SOLID** - Single Responsibility, Open/Closed, Liskov, Interface Segregation, Dependency Inversion
-- **DRY** - Don't Repeat Yourself (extract reusable code)
+- **DRY** - Don't Repeat Yourself (extract reusable code) → `references/dry-detection.md`
 - **YAGNI** - You Aren't Gonna Need It (don't build unused features)
 - **KISS** - Keep It Simple, Stupid (simplest solution that works)
 
@@ -105,6 +153,34 @@ Existing project uses callbacks? → Use callbacks (unless migrating)
 5. Implement auth → `references/authentication.md`
 6. Refactor with tests passing → `references/code-quality.md`
 
+### Add Similar Feature (DRY-First Approach)
+
+> **CRITICAL: When task says "do X like Y" or "add similar to existing"**
+
+1. **Find existing implementation** → `references/dry-detection.md`
+   ```bash
+   grep -rn "similar_feature\|related_domain" --include="*.go" --include="*.ts" .
+   ```
+2. **Analyze similarity** → Is >50% of logic the same?
+3. **If similar, refactor FIRST:**
+   - Extract shared calculation/mapping helpers
+   - Create interface if multiple sources need same processing
+   - Only THEN add new entry point
+4. **Implement thin adapter** → New code should be <50 lines
+5. **Test both old and new paths** → Ensure refactoring didn't break existing
+
+**Example:**
+
+```
+Task: "Send event to API from quotation endpoint (like cronjob does)"
+
+❌ WRONG: Copy 300 lines from cronjob mapper to new quotation mapper
+✅ RIGHT:
+  1. Extract shared calculateOfferDifferences() helper
+  2. Create EventSource interface
+  3. Add 20-line adapter for quotation flow
+```
+
 ### Fix Slow Query
 
 1. Profile query → `references/debugging.md` (EXPLAIN ANALYZE)
@@ -141,6 +217,7 @@ Existing project uses callbacks? → Use callbacks (unless migrating)
 | **Cross-Cutting**                |                                                            |
 | `references/architecture.md`     | **Clean Architecture (4-layer)**, microservices, events    |
 | `references/code-quality.md`     | **SOLID, DRY, YAGNI, KISS**, design patterns               |
+| `references/dry-detection.md`    | **MANDATORY** - DRY detection, code reuse patterns         |
 | `references/api-design.md`       | Design REST endpoints, versioning                          |
 | `references/authentication.md`   | Implement OAuth 2.1, JWT, RBAC                             |
 | `references/security.md`         | Apply OWASP Top 10, input validation                       |

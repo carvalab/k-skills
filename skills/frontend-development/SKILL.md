@@ -10,24 +10,26 @@ model: opus
 Next.js (latest) App Router with TypeScript. Server-first architecture.
 
 > **Related Skills**:
+>
 > - `kavak-documentation` - **USE FIRST** for Kavak-specific patterns, GitLab CI, Docker templates
 > - `vercel-react-best-practices` - **USE THIS** for performance (bundle size, waterfalls, caching, re-renders, memoization)
 > - Check `.claude/CLAUDE.md` for project-specific conventions
 > - Check `.cursor/rules/*` for project-specific conventions
 >
-> **MCP**: 
+> **MCP**:
+>
 > - Use `kavak-platform/plati_query` tool to query Kavak internal documentation before implementing
 > - Use `next-devtools` MCP server if available for debugging, route inspection, and build analysis
 
 ## Quick Start
 
-| Task | Pattern |
-|------|---------|
-| New page | Server Component by default |
-| Data fetching | Server Component async fetch |
-| Mutations | Server Actions + Zod + revalidatePath |
-| Styling | MUI `sx` prop, inline if <100 lines |
-| State | Server = fetch, Client = useState only when needed |
+| Task          | Pattern                                            |
+| ------------- | -------------------------------------------------- |
+| New page      | Server Component by default                        |
+| Data fetching | Server Component async fetch                       |
+| Mutations     | Server Actions + Zod + revalidatePath              |
+| Styling       | MUI `sx` prop, inline if <100 lines                |
+| State         | Server = fetch, Client = useState only when needed |
 
 ## Core Principles
 
@@ -73,22 +75,24 @@ import { revalidatePath } from 'next/cache';
 const schema = z.object({ title: z.string().min(1) });
 
 export async function createPost(formData: FormData) {
-    const parsed = schema.safeParse({ title: formData.get('title') });
-    if (!parsed.success) return { error: parsed.error.flatten() };
+  const parsed = schema.safeParse({ title: formData.get('title') });
+  if (!parsed.success) return { error: parsed.error.flatten() };
 
-    await db.post.create({ data: parsed.data });
-    revalidatePath('/posts');
-    return { success: true };
+  await db.post.create({ data: parsed.data });
+  revalidatePath('/posts');
+  return { success: true };
 }
 ```
 
 **When to use Server Actions vs API Routes:**
+
 - Server Actions → Internal mutations, form submissions
 - Route Handlers → Public APIs, webhooks, large uploads, streaming
 
 ## Critical Rules
 
 ### Never
+
 ```typescript
 // ❌ Large 'use client' at top of tree
 'use client';  // Marks entire subtree as client
@@ -101,6 +105,7 @@ const apiKey = process.env.SECRET_KEY;  // In client component
 ```
 
 ### Always
+
 ```typescript
 // ✅ Small leaf-level client components
 // ✅ Validate Server Action inputs with Zod
@@ -130,41 +135,44 @@ app/
 ## Common Workflows
 
 ### New Feature
+
 1. Create `app/{route}/page.tsx` (Server Component)
 2. Add `loading.tsx` for Suspense boundary
 3. Create Server Actions in `actions.ts`
 4. Add Client Components only where needed
 
 ### Performance Issue
+
 → **Run `vercel-react-best-practices` skill** for optimization rules
 
 ### Styling Component
+
 1. Use MUI `sx` prop with `SxProps<Theme>`
 2. Inline styles if <100 lines, separate `.styles.ts` if >100
 3. Grid: `size={{ xs: 12, md: 6 }}`
 
 ## References
 
-| Reference | When to Use |
-|-----------|-------------|
-| `references/nextjs.md` | App Router, RSC, Server Actions, caching |
-| `references/component-patterns.md` | React.FC, hooks order, dialogs, forms |
-| `references/styling.md` | MUI sx prop, Grid, theming |
-| `references/typescript.md` | Types, generics, Zod validation |
-| `references/project-structure.md` | features/ vs components/, organization |
+| Reference                          | When to Use                              |
+| ---------------------------------- | ---------------------------------------- |
+| `references/nextjs.md`             | App Router, RSC, Server Actions, caching |
+| `references/component-patterns.md` | React.FC, hooks order, dialogs, forms    |
+| `references/styling.md`            | MUI sx prop, Grid, theming               |
+| `references/typescript.md`         | Types, generics, Zod validation          |
+| `references/project-structure.md`  | features/ vs components/, organization   |
 
 **Performance/Optimization** → `vercel-react-best-practices` skill
 
 ## Technology Stack
 
-| Layer | Technology |
-|-------|------------|
-| Framework | Next.js (App Router, latest) |
-| Type Safety | TypeScript (strict) + Zod |
-| Data Fetching | Server Components (async) |
-| Mutations | Server Actions + revalidatePath |
-| Client State | useState (minimal) |
-| Styling | MUI (latest) |
-| Forms | Server Actions + useActionState |
+| Layer         | Technology                      |
+| ------------- | ------------------------------- |
+| Framework     | Next.js (App Router, latest)    |
+| Type Safety   | TypeScript (strict) + Zod       |
+| Data Fetching | Server Components (async)       |
+| Mutations     | Server Actions + revalidatePath |
+| Client State  | useState (minimal)              |
+| Styling       | MUI (latest)                    |
+| Forms         | Server Actions + useActionState |
 
 **Note**: TanStack Query only if you need real-time polling or complex optimistic updates. See `references/data-fetching.md`.

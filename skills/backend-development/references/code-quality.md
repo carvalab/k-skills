@@ -273,6 +273,8 @@ async function createUser(email: string): Promise<User> {}
 
 ### DRY (Don't Repeat Yourself)
 
+**See `references/dry-detection.md` for comprehensive DRY detection guide.**
+
 ```typescript
 // BAD: Duplicated validation in multiple places
 // GOOD: Extract to reusable function
@@ -280,6 +282,52 @@ function validateEmail(email: string) {
   if (!email || !email.includes('@')) {
     throw new ValidationError('Invalid email');
   }
+}
+```
+
+#### Pre-Implementation DRY Check (MANDATORY)
+
+Before creating new code, search for similar implementations:
+
+```bash
+# Search for similar function names
+grep -rn "Map.*To.*Event\|Calculate.*Diff" --include="*.ts" --include="*.go" .
+
+# Search for similar domain concepts
+grep -rn "quotation\|simulation\|pricing" --include="*.ts" --include="*.go" . | head -30
+```
+
+**DRY Decision Matrix:**
+
+| Similarity | Action                                  |
+| ---------- | --------------------------------------- |
+| <30%       | Proceed with new code                   |
+| 30-50%     | Consider extracting common parts        |
+| >50%       | **MUST refactor** - do not duplicate    |
+
+#### Signs of Hidden Duplication
+
+| Red Flag                         | Solution                         |
+| -------------------------------- | -------------------------------- |
+| "Similar to X but for Y"         | Extract shared helper            |
+| Same calculations in 2+ places   | Create calculation function      |
+| Same struct fields copied        | Use composition                  |
+| New file looks like existing     | **STOP** - extend existing       |
+
+```typescript
+// ❌ BAD: 300-line file that duplicates existing logic
+function mapModelAToEvent(a: ModelA): Event {
+  // 250 lines of calculations (same as existing mapModelBToEvent)
+}
+
+// ✅ GOOD: Extract shared logic
+function calculateOfferDifferences(prev: Offers, curr: Offers): Differences {
+  // Calculations in ONE place
+}
+
+function mapModelAToEvent(a: ModelA): Event {
+  const diffs = calculateOfferDifferences(extractOffers(a));
+  return buildEvent(a.userId, diffs);
 }
 ```
 
